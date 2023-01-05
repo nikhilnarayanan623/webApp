@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- Section: Design Block -->
+<section class="text-center text-lg-start" style="height: 100vh;">
+
+    <div class="p-5 bg-image" style="
+        background-image: url('https://t3.ftcdn.net/jpg/03/22/69/00/360_F_322690073_C3HGQDDRUmwHrDgf28PIRtXWFeWyBaLD.jpg');
+        height: 100vh;
+        ">
+  
+        <!-- Jumbotron -->
+        <div class="container py-4">
+        <div class="row mt-5 g-0 align-items-center justify-content-center">
+            <div class="col-10 col-lg-7 col-xl-6">
+            <div class="card " style="
+                background: hsla(0, 0%, 100%, 0.323);
+                backdrop-filter: blur(30px);
+                ">
+                <div class="card-body p-5 shadow-5 text-center">
+                <h2 class="fw-bold mb-5">Admin Sign In</h2>
+                    <h4 class="{{.Color}}">{{.Message}}</h4>
+                <form action="/admin" method="post">
+                
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                    <input type="email" name="email" id="form3Example3" class="form-control" />
+                    <label class="form-label" for="form3Example3">Email address</label>
+                    </div>
+    
+                    <!-- Password input -->
+                    <div class="form-outline mb-4">
+                    <input type="password" name="password" id="form3Example4" class="form-control" />
+                    <label class="form-label" for="form3Example4">Password</label>
+                    </div>
+    
+                    
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-block mb-4">
+                    Sign up
+                    </button>
+    
+                    
+                </form>
+                </div>
+            </div>
+            </div>
+    
+        </div>
+        </div>
+        <!-- Jumbotron -->
+
+    </div>
+  </section>
+  <!-- Section: Design Block -->
+</body>
+</html>
