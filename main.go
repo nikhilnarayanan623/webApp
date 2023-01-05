@@ -1,15 +1,25 @@
 package main
 
 import (
+	"webApp/pkg/db"
+	"webApp/pkg/helper"
+	"webApp/pkg/initilizer"
 	"webApp/pkg/routes"
 
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	initilizer.LoadEnv()
+	db.ConnnectToDb()
+	db.MigrateToDB()
+	helper.CreateAdmin()
+}
+
 func main() {
 	router := gin.New()
 
-	//parse all templae
+	//parse all templates
 	router.LoadHTMLGlob("templates/*.html")
 
 	routes.Admin(router)
