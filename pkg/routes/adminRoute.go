@@ -13,5 +13,5 @@ func Admin(router *gin.Engine) {
 	router.POST("/admin", controllers.Submit)
 
 	router.GET("/admin/home", middleware.AdminAuth, controllers.Home)
-	router.GET("/admin/logout", middleware.AdminAuth, controllers.Logout)
+	router.GET("/admin/logout", controllers.Logout)
 }
