@@ -18,7 +18,7 @@ func Login(ctx *gin.Context) {
 func Submit(ctx *gin.Context) {
 	fmt.Println("At Admin Submit")
 
-	validRes, ok := helper.ValidateAdmin(struct {
+	validRes, ok := helper.ValidateAdmin(struct { //call validation helper function
 		Email    string `validate:"required,email"`
 		Password string `validate:"required"`
 	}{
@@ -29,9 +29,18 @@ func Submit(ctx *gin.Context) {
 	if !ok {
 		LoginMessage = validRes
 		Login(ctx)
+		return
 	}
 
 	adminDetails = validRes
+
+	//set the jwt
+	if !helper.JwtSetUp(ctx, "admin", validRes) { //func to setup the jwt
+		//error to setup the token
+		Login(ctx)
+		return
+	}
+
 	//valid admin
 	Home(ctx)
 }

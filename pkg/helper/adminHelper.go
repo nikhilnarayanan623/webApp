@@ -57,6 +57,8 @@ func ValidateAdmin(form struct {
 	fmt.Println("valid admin login")
 	return admin, true
 }
+
+// create admin
 func CreateAdmin() {
 
 	aEmail := os.Getenv("ADMINEMAIL")
