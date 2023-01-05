@@ -23,7 +23,7 @@ type User struct {
 
 // model to store balck listed jwt in db
 type JwtBlackList struct {
-	ID      uint    `gorm:"primarykey"`
-	Token   string  `gorm:"not null"`
-	EndTime float64 `gorm:"not null"`
+	ID          uint    `gorm:"primarykey"`
+	TokenString string  `gorm:"not null"`
+	EndTime     float64 `gorm:"not null"`
 }

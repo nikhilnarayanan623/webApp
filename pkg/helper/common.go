@@ -65,7 +65,7 @@ func GetToken(ctx *gin.Context) (*jwt.Token, bool) {
 	}
 	//check the user in black list or not
 	var jwtBlack models.JwtBlackList
-	db.DB.First(&jwtBlack, "token = ?", cookieval)
+	db.DB.First(&jwtBlack, "token_string = ?", cookieval)
 
 	if jwtBlack.ID != 0 {
 		return nil, false //this user is in black list
