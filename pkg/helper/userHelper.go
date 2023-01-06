@@ -46,8 +46,8 @@ func ValidateUserLogin(form struct {
 		}, false
 	}
 
-	//valid user so return his database value
-	return user, true
+	//valid user so return user id
+	return user.ID, true
 }
 
 //validate user signup

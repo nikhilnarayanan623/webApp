@@ -55,7 +55,7 @@ func ValidateAdmin(form struct {
 
 	//valid admin
 	fmt.Println("valid admin login")
-	return admin, true
+	return admin.ID, true //return the id of user in database
 }
 
 // create admin

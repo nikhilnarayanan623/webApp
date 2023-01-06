@@ -18,7 +18,6 @@ func init() {
 
 func main() {
 	router := gin.Default()
-
 	//parse all templates
 	router.LoadHTMLGlob("templates/*.html")
 

@@ -3,9 +3,9 @@ package db
 import (
 	"fmt"
 	"os"
+	"time"
 	"webApp/pkg/models"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,7 +15,10 @@ var (
 	err error
 )
 
-func CheckTokenInBlackList(ctx *gin.Context) {
+func DeleteBlackListToken() {
+
+	DB.Where("end_time < ?", float64(time.Now().Unix())).Delete(&models.JwtBlackList{})
+	fmt.Println("delted black listed token from database")
 }
 
 func ConnnectToDb() {

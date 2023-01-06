@@ -14,21 +14,24 @@ import (
 // func to setup the jwt token parametes are:
 // gin context for setup cookie
 // name to store key and userdetails as value in jwt map
-func JwtSetUp(ctx *gin.Context, user interface{}) bool {
+func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 	fmt.Println("jwt setup")
 
 	cookieTime := time.Now().Add(1 * time.Minute).Unix()
-	fmt.Println("jwt setup ", user)
+	fmt.Println("jwt setup ", userId)
+
+	// v := reflect.ValueOf(user)
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user": user,
-		"exp":  cookieTime,
+		"userId": userId, //store the user id on token
+		"exp":    cookieTime,
 	})
 
 	//create signed token string using env vaiable
 	if tokenString, err := token.SignedString([]byte(os.Getenv("JWTCODE"))); err == nil {
 		//set cookie
 
-		ctx.SetCookie("jwt-auth", tokenString, 1*60, "", "", false, true)
+		ctx.SetCookie(name, tokenString, 1*60, "", "", false, true)
 		fmt.Println("successfully setup jwt cookie")
 		return true
 	}
@@ -38,10 +41,12 @@ func JwtSetUp(ctx *gin.Context, user interface{}) bool {
 }
 
 // get token if token is not in black list of dtabase
-func GetToken(ctx *gin.Context) (*jwt.Token, bool) {
+func GetToken(ctx *gin.Context, name string) (*jwt.Token, bool) {
+	//delete expired token from black list database
+	db.DeleteBlackListToken()
 
 	//get the cookie
-	cookieval, ok := GetCookieVal(ctx)
+	cookieval, ok := GetCookieVal(ctx, name)
 
 	if !ok { //problem to get cookie so return flase
 		return nil, false
@@ -73,9 +78,9 @@ func GetToken(ctx *gin.Context) (*jwt.Token, bool) {
 }
 
 // to get cookie from client side
-func GetCookieVal(ctx *gin.Context) (string, bool) {
+func GetCookieVal(ctx *gin.Context, name string) (string, bool) {
 
-	if cookieVal, err := ctx.Cookie("jwt-auth"); err == nil {
+	if cookieVal, err := ctx.Cookie(name); err == nil {
 		return cookieVal, true
 	}
 

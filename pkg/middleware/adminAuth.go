@@ -15,7 +15,7 @@ func AdminAuth(ctx *gin.Context) {
 
 	//get token using function that check the cookie is got and cookie alredy in black list
 
-	token, ok := helper.GetToken(ctx)
+	token, ok := helper.GetToken(ctx, "admin")
 
 	if !ok {
 		ctx.Abort()
@@ -24,14 +24,16 @@ func AdminAuth(ctx *gin.Context) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid { //valid token
-
+		//chek the token time is over
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
 			fmt.Println("the token is timeouted")
 			ctx.Abort()
 			controllers.LoginAdmin(ctx)
 			return
 		}
-		ctx.Set("admin", claims["user"]) //set the admin details in ctx
+		//chekc the claims token useId is valid
+
+		ctx.Set("adminId", claims["userId"]) //set the admin details in ctx
 
 		if ctx.Request.URL.Path != "/admin/home" {
 			ctx.Abort()
@@ -42,9 +44,7 @@ func AdminAuth(ctx *gin.Context) {
 
 	} else {
 		ctx.Abort()
-		ctx.Redirect(300, "admin/home")
+		ctx.Redirect(300, "/admin")
 	}
-
-	//chekc the
 
 }

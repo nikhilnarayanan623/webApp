@@ -41,8 +41,8 @@ func SubmitAdmin(ctx *gin.Context) {
 		return
 	}
 
-	//set the jwt
-	if !helper.JwtSetUp(ctx, adminVal) { //func to setup the jwt
+	//set the jwt // admiVal is actully admin id
+	if !helper.JwtSetUp(ctx, "admin", adminVal) { //func to setup the jwt
 		//error to setup the token
 		LoginAdmin(ctx)
 		return
@@ -55,9 +55,10 @@ func SubmitAdmin(ctx *gin.Context) {
 
 func HomeAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Home")
+
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	value, _ := ctx.Get("admin")
+	value, _ := ctx.Get("adminId")
 
 	ctx.HTML(200, "adminHome.html", value)
 }
@@ -66,7 +67,7 @@ func HomeAdmin(ctx *gin.Context) {
 func LogoutAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Logout")
 
-	cookieVal, ok := helper.GetCookieVal(ctx)
+	cookieVal, ok := helper.GetCookieVal(ctx, "admin")
 
 	if !ok {
 		ctx.Redirect(http.StatusTemporaryRedirect, "/admin")
@@ -74,7 +75,7 @@ func LogoutAdmin(ctx *gin.Context) {
 	}
 
 	//if token is there then add it blacklist if its time not out
-	token, ok := helper.GetToken(ctx)
+	token, ok := helper.GetToken(ctx, "admin")
 
 	if ok {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
