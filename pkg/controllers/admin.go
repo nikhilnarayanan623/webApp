@@ -15,18 +15,19 @@ import (
 
 var LoginMessage interface{}
 
-func Login(ctx *gin.Context) {
+func LoginAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Login")
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 	ctx.HTML(200, "adminLogin.html", LoginMessage)
+	userMessage = nil
 
 }
 
-func Submit(ctx *gin.Context) {
+func SubmitAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Submit")
 
-	validRes, ok := helper.ValidateAdmin(struct { //call validation helper function
+	adminVal, ok := helper.ValidateAdmin(struct { //call validation helper function
 		Email    string `validate:"required,email"`
 		Password string `validate:"required"`
 	}{
@@ -35,37 +36,36 @@ func Submit(ctx *gin.Context) {
 	})
 
 	if !ok {
-		LoginMessage = validRes
-		Login(ctx)
+		LoginMessage = adminVal
+		LoginAdmin(ctx)
 		return
 	}
 
-	adminDetails = validRes
-
 	//set the jwt
-	if !helper.JwtSetUp(ctx, "admin", validRes) { //func to setup the jwt
+	if !helper.JwtSetUp(ctx, adminVal) { //func to setup the jwt
 		//error to setup the token
-		Login(ctx)
+		LoginAdmin(ctx)
 		return
 	}
 
 	//valid admin
-	//ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
 	ctx.Redirect(http.StatusSeeOther, "admin//home")
 }
 
-var adminDetails interface{}
-
-func Home(ctx *gin.Context) {
+func HomeAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Home")
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
-	ctx.HTML(200, "adminHome.html", adminDetails)
+
+	value, _ := ctx.Get("admin")
+
+	ctx.HTML(200, "adminHome.html", value)
 }
 
-func Logout(ctx *gin.Context) {
+// logout
+func LogoutAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Logout")
-	//ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+
 	cookieVal, ok := helper.GetCookieVal(ctx)
 
 	if !ok {

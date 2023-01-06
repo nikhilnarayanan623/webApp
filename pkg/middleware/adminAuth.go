@@ -19,7 +19,7 @@ func AdminAuth(ctx *gin.Context) {
 
 	if !ok {
 		ctx.Abort()
-		controllers.Login(ctx)
+		controllers.LoginAdmin(ctx)
 		return
 	}
 
@@ -28,11 +28,10 @@ func AdminAuth(ctx *gin.Context) {
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
 			fmt.Println("the token is timeouted")
 			ctx.Abort()
-			controllers.Login(ctx)
+			controllers.LoginAdmin(ctx)
 			return
 		}
-
-		ctx.Set("admin", claims["admins"]) //set the admin details in ctx
+		ctx.Set("admin", claims["user"]) //set the admin details in ctx
 
 		if ctx.Request.URL.Path != "/admin/home" {
 			ctx.Abort()

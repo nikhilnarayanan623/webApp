@@ -9,9 +9,9 @@ import (
 
 func Admin(router *gin.Engine) {
 
-	router.GET("/admin", middleware.AdminAuth, controllers.Login)
-	router.POST("/admin", controllers.Submit)
+	router.GET("/admin", middleware.AdminAuth, controllers.LoginAdmin)
+	router.POST("/admin", controllers.SubmitAdmin)
 
-	router.GET("/admin/home", middleware.AdminAuth, controllers.Home)
-	router.GET("/admin/logout", controllers.Logout)
+	router.GET("/admin/home", middleware.AdminAuth, controllers.HomeAdmin)
+	router.GET("/admin/logout", controllers.LogoutAdmin)
 }

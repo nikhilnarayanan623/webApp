@@ -14,14 +14,14 @@ import (
 // func to setup the jwt token parametes are:
 // gin context for setup cookie
 // name to store key and userdetails as value in jwt map
-func JwtSetUp(ctx *gin.Context, name string, user interface{}) bool {
+func JwtSetUp(ctx *gin.Context, user interface{}) bool {
 	fmt.Println("jwt setup")
 
 	cookieTime := time.Now().Add(1 * time.Minute).Unix()
-
+	fmt.Println("jwt setup ", user)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		name:  user,
-		"exp": cookieTime,
+		"user": user,
+		"exp":  cookieTime,
 	})
 
 	//create signed token string using env vaiable
@@ -37,24 +37,7 @@ func JwtSetUp(ctx *gin.Context, name string, user interface{}) bool {
 	return false
 }
 
-// check the tokenstrng is in black list db
-// func LogoutedUser(ctx *gin.Context) bool {
-
-// 	if cookieval, ok := GetCookieVal(ctx); ok {
-// 		//chekc the cookieval on black db
-// 		var jwtBlack models.JwtBlackList
-
-// 		db.DB.First(&jwtBlack, "token = ?", cookieval)
-
-// 		if jwtBlack.ID == 0 {
-// 			return true // this cookie not in db
-// 		}
-// 	}
-
-// 	//if cookie didnt get or user in black list return flase
-// 	return false
-// }
-
+// get token if token is not in black list of dtabase
 func GetToken(ctx *gin.Context) (*jwt.Token, bool) {
 
 	//get the cookie

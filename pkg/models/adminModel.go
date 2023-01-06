@@ -10,17 +10,6 @@ type Admin struct {
 	Password string `grom:"not null"`
 }
 
-// model for user
-type User struct {
-	gorm.Model
-
-	FirstName string `gorm:"not null"`
-	LastName  string `gorm:"not null"`
-
-	Email    string `grom:"unique; not null"`
-	Password string `gorm:"unique; not null"`
-}
-
 // model to store balck listed jwt in db
 type JwtBlackList struct {
 	ID          uint    `gorm:"primarykey"`

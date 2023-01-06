@@ -17,12 +17,14 @@ func init() {
 }
 
 func main() {
-	router := gin.New()
+	router := gin.Default()
 
 	//parse all templates
 	router.LoadHTMLGlob("templates/*.html")
 
+	//setup router
 	routes.Admin(router)
+	routes.User(router)
 
 	//no  rout found
 	router.NoRoute(func(ctx *gin.Context) {
