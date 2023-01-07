@@ -11,4 +11,5 @@ type User struct {
 
 	Email    string `grom:"unique; not null"`
 	Password string `gorm:"unique; not null"`
+	Status   bool   `gorm:"not null"`
 }

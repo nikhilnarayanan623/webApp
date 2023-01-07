@@ -10,7 +10,45 @@
 </head>
 <body>
     <h1>Admin Home</h1>
-    <h1 class="text-success">Admin Id is {{.}}</h1>
+   
     <a href="/admin/logout" class="btn btn-danger">Logout</a>
+    <br>
+
+    <div class="container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Block/Unblock</th>
+            <th scope="col">Delete User</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          {{range .}}
+          <tr>
+            <td style="display: none;">{{.UserId}}</td>
+            <th scope="row">{{.ID}}</th>
+            <td>{{.FirstName}}</td>
+            <td>{{.LastName}}</td>
+            <td>{{.Email}}</td>
+
+            {{if .Status}}
+              <td><a href="/admin/blockuser/block/{{.UserId}}" class="btn btn-danger">TO BLOCK</a></td>
+            {{else}}
+            <td><a href="/admin/blockuser/unblock/{{.UserId}}" class="btn btn-success">TO UNBLOCK</a></td>
+            {{end}}
+            
+            <td><a href="/admin/deleteuser/{{.UserId}}" class="btn btn-danger">DELETE</a></td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+
+    
 </body>
 </html>

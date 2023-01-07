@@ -17,7 +17,7 @@ import (
 func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 	fmt.Println("jwt setup")
 
-	cookieTime := time.Now().Add(1 * time.Minute).Unix()
+	cookieTime := time.Now().Add(2 * time.Minute).Unix()
 	fmt.Println("jwt setup ", userId)
 
 	// v := reflect.ValueOf(user)
@@ -31,7 +31,7 @@ func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 	if tokenString, err := token.SignedString([]byte(os.Getenv("JWTCODE"))); err == nil {
 		//set cookie
 
-		ctx.SetCookie(name, tokenString, 1*60, "", "", false, true)
+		ctx.SetCookie(name, tokenString, 2*60, "", "", false, true)
 		fmt.Println("successfully setup jwt cookie")
 		return true
 	}

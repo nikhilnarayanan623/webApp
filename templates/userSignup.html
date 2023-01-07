@@ -34,7 +34,7 @@
             <div class="card-body p-5 shadow-5 text-center">
               <h2 class="fw-bold mb-5">Sign up now</h2>
               {{if .Alert}}
-              <h5 class="text-danger">{{.Alert}}</h5>
+              <h4 class="text-danger">{{.Alert}}</h4>
               {{end}}
               <form action="/signup" method="post" novalidate>
                 <!-- 2 column grid layout with text inputs for the first and last names -->
@@ -44,7 +44,7 @@
                     <div class="form-outline">
                       <input type="text" name="fname" id="form3Example1" class="form-control" />
                       {{if .FirstName}}
-                      <p style="color: rgb(154, 0, 0);">{{.FirstName}}</p>
+                      <p style="color: rgb(154, 0, 0); font-size: medium;">{{.FirstName}}</p>
                       {{else}}
                       <label class="form-label" for="form3Example1">First name</label>
                       {{end}}
@@ -55,7 +55,7 @@
                     <div class="form-outline">
                       <input type="text" name="lname" id="form3Example2" class="form-control" />
                       {{if .LastName}}
-                      <p style="color: rgb(154, 0, 0);">{{.LastName}} </p>
+                      <p style="color: rgb(154, 0, 0); font-size: medium;">{{.LastName}} </p>
                       {{else}}
                       <label class="form-label" for="form3Example2">Last name</label>
                       {{end}}

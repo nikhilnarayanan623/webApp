@@ -99,9 +99,9 @@ func HomeUser(ctx *gin.Context) {
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	value, _ := ctx.Get("userId")
+	userId, _ := ctx.Get("userId")
 
-	ctx.HTML(http.StatusOK, "userHome.html", value)
+	ctx.HTML(http.StatusOK, "userHome.html", userId)
 
 }
 func LogoutUser(ctx *gin.Context) {

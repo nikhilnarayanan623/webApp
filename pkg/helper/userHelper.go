@@ -23,7 +23,7 @@ func ValidateUserLogin(form struct {
 
 		for _, er := range err.(validator.ValidationErrors) {
 
-			templateMessage[er.Field()] = "Enter " + er.Field() + "Properly"
+			templateMessage[er.Field()] = "Enter " + er.Field() + " Properly"
 		}
 
 		return templateMessage, false
@@ -35,14 +35,23 @@ func ValidateUserLogin(form struct {
 	db.DB.First(&user, "email = ?", form.Email)
 
 	if user.ID == 0 { //user not found
-		return map[string]bool{
-			"Email": true,
+		return map[string]string{
+			"Alert": "You are not a registered user you can signup",
+			"Color": "text-danger",
 		}, false
 	}
 	//hash the password and check it on db pass
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(form.Password)) != nil {
-		return map[string]bool{
-			"Password": true,
+		return map[string]string{
+			"Password": "Wrong Password",
+		}, false
+	}
+
+	//check the user is blocked or not
+	if !user.Status {
+		return map[string]string{
+			"Color": "text-danger",
+			"Alert": "You are blocked by admin",
 		}, false
 	}
 
@@ -105,6 +114,7 @@ func ValidateUserSubmit(form struct {
 		LastName:  form.LastName,
 		Email:     form.Email,
 		Password:  string(hasPass),
+		Status:    true,
 	})
 	return map[string]string{"Color": "text-success",
 		"Alert": "Sucessfully Account Created You Can Login",

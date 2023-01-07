@@ -14,4 +14,7 @@ func Admin(router *gin.Engine) {
 
 	router.GET("/admin/home", middleware.AdminAuth, controllers.HomeAdmin)
 	router.GET("/admin/logout", controllers.LogoutAdmin)
+
+	router.GET("/admin/:deleteuser/:id", controllers.DeleteUserAdmin)
+	router.GET("/admin/blockuser/:status/:id", controllers.BlockUserAdmin)
 }

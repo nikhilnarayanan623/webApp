@@ -58,9 +58,38 @@ func HomeAdmin(ctx *gin.Context) {
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	value, _ := ctx.Get("adminId")
+	//adminId, _ := ctx.Get("adminId")
 
-	ctx.HTML(200, "adminHome.html", value)
+	var record []models.User
+	db.DB.Find(&record)
+
+	//type to store uer details in order way
+	type field struct {
+		ID        int
+		UserId    uint
+		FirstName string
+		LastName  string
+		Email     string
+		Status    bool
+	}
+	//slice to store all user
+	var arrayOfField []field
+
+	//range through record and add it on slice
+
+	for i, res := range record {
+		arrayOfField = append(arrayOfField, field{
+			ID:        i + 1,
+			UserId:    res.ID,
+			FirstName: res.FirstName,
+			LastName:  res.LastName,
+			Email:     res.Email,
+			Status:    res.Status,
+		})
+	}
+
+	fmt.Println("test")
+	ctx.HTML(200, "adminHome.html", arrayOfField)
 }
 
 // logout
@@ -93,4 +122,30 @@ func LogoutAdmin(ctx *gin.Context) {
 	}
 
 	ctx.Redirect(http.StatusTemporaryRedirect, "/admin")
+}
+
+//delte user
+
+func DeleteUserAdmin(ctx *gin.Context) {
+
+	userId := ctx.Param("id")
+
+	db.DB.Clauses(clause.OnConflict{DoNothing: true}).Unscoped().Delete(&models.User{}, "id = ?", userId)
+
+	ctx.Redirect(http.StatusSeeOther, "/admin/home")
+}
+func BlockUserAdmin(ctx *gin.Context) {
+	fmt.Println("at admin block")
+
+	fmt.Println(ctx.Params)
+
+	userId := ctx.Params.ByName("id")
+
+	if ctx.Params.ByName("status") == "block" {
+		db.DB.Model(&models.User{}).Where("id = ?", userId).Update("status", false)
+	} else {
+		db.DB.Model(&models.User{}).Where("id = ?", userId).Update("status", true)
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/admin/home")
 }
