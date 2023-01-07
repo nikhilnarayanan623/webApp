@@ -19,6 +19,8 @@ var userMessage interface{} // to store all message that want to show in login a
 func SignupUser(ctx *gin.Context) {
 	fmt.Println("signup user")
 
+	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+
 	ctx.HTML(http.StatusOK, "userSignup.html", userMessage)
 	userMessage = nil
 }

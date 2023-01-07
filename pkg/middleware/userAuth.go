@@ -17,8 +17,13 @@ func UserAuthentication(ctx *gin.Context) {
 
 	token, ok := helper.GetToken(ctx, "user")
 
-	if !ok {
-		fmt.Println("aborted 1")
+	if !ok { //no token also no cookie
+		//check the middleware call from signup page then show the next
+		if ctx.Request.URL.Path == "/signup" {
+			ctx.Next()
+			return
+		}
+		//else case abort and go to login page
 		ctx.Abort()
 		controllers.LoginUser(ctx)
 		return
