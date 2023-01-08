@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
-	"webApp/pkg/db"
-	"webApp/pkg/helper"
-	"webApp/pkg/initilizer"
-	"webApp/pkg/routes"
+
+	"github.com/nikhilnarayanan623/webApp/pkg/db"
+	"github.com/nikhilnarayanan623/webApp/pkg/helper"
+	"github.com/nikhilnarayanan623/webApp/pkg/initilizer"
+	"github.com/nikhilnarayanan623/webApp/pkg/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,6 +32,7 @@ func main() {
 	//invalid url then redirect to login page of user that middleware check if user is logged in then show home page
 	//otherwise show login page
 	router.NoRoute(func(ctx *gin.Context) {
+		fmt.Println("invalid url so showing login page")
 		ctx.Redirect(http.StatusSeeOther, "/")
 	})
 

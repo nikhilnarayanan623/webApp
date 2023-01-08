@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"webApp/pkg/controllers"
-	"webApp/pkg/middleware"
+	"github.com/nikhilnarayanan623/webApp/pkg/controllers"
+	"github.com/nikhilnarayanan623/webApp/pkg/middleware"
 
 	"github.com/gin-gonic/gin"
 )

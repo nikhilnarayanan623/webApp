@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"webApp/pkg/models"
+	"github.com/nikhilnarayanan623/webApp/pkg/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

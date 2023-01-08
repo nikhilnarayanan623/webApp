@@ -3,8 +3,9 @@ package helper
 import (
 	"fmt"
 	"os"
-	"webApp/pkg/db"
-	"webApp/pkg/models"
+
+	"github.com/nikhilnarayanan623/webApp/pkg/db"
+	"github.com/nikhilnarayanan623/webApp/pkg/models"
 
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"

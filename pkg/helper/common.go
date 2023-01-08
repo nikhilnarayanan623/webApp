@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"webApp/pkg/db"
-	"webApp/pkg/models"
+	"github.com/nikhilnarayanan623/webApp/pkg/db"
+	"github.com/nikhilnarayanan623/webApp/pkg/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"

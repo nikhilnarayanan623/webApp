@@ -1,4 +1,4 @@
-module webApp
+module github.com/nikhilnarayanan623/webApp
 
 go 1.19
 
