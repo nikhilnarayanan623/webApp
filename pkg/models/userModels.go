@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/lib/pq"
+	"gorm.io/gorm"
+)
 
 // model for user
 type User struct {
@@ -12,4 +15,8 @@ type User struct {
 	Email    string `grom:"unique; not null"`
 	Password string `gorm:"unique; not null"`
 	Status   bool   `gorm:"not null"`
+
+	Products pq.Int64Array `gorm:"type:integer[]"`
 }
+
+// ProductId []int `gorm:"type:integer[]"`

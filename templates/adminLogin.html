@@ -23,24 +23,32 @@
         <div class="row mt-5 g-0 align-items-center justify-content-center">
             <div class="col-10 col-lg-7 col-xl-6">
             <div class="card " style="
-                background: hsla(0, 0%, 100%, 0.323);
+                background: hsla(0, 0%, 100%, 0.559);
                 backdrop-filter: blur(30px);
                 ">
                 <div class="card-body p-5 shadow-5 text-center">
                 <h2 class="fw-bold mb-5">Admin Sign In</h2>
-                    <h4 class="{{.Color}}">{{.Message}}</h4>
+                    <h4 style="color:rgb(154, 0, 0); ">{{.Alert}}</h4>
                 <form action="/admin" method="post">
                 
                     <!-- Email input -->
                     <div class="form-outline mb-4">
                     <input type="email" name="email" id="form3Example3" class="form-control" />
+                    {{if .Email}}
+                    <p style="color:rgb(154, 0, 0);  font-size: medium;">{{.Email}}</p>
+                    {{else}}
                     <label class="form-label" for="form3Example3">Email address</label>
+                    {{end}}
                     </div>
     
                     <!-- Password input -->
                     <div class="form-outline mb-4">
                     <input type="password" name="password" id="form3Example4" class="form-control" />
+                    {{if .Password}}
+                    <p style="color: rgb(154, 0, 0);  font-size: medium;">{{.Password}}</p>
+                    {{else}}
                     <label class="form-label" for="form3Example4">Password</label>
+                    {{end}}
                     </div>
     
                     

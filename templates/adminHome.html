@@ -9,12 +9,42 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>Admin Home</h1>
-   
-    <a href="/admin/logout" class="btn btn-danger">Logout</a>
-    <br>
+
+      <!-- nabar start -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+    <div class="container mt-3">
+        <div class="row justify-content-between">
+            <div class="col-2">
+                <h4 class=" text-dark">Wecome Admin </h4>    
+            </div>
+            <div class="col-2">
+              <div class="row justify-content-end">
+                  <a href="/admin/products"><button class="btn btn-success">Product</button></a>
+              </div>
+              
+            </div>
+
+            <div class="col-2">
+              <div class="row justify-content-end">
+                  <a href="/admin/addProduct"><button class="btn btn-success">Add Product</button></a>
+              </div>
+            </div>
+            
+            <div class="col-2">
+                <div class="row justify-content-end">
+                    <a href="/admin/logout"style="width: 2rem;"><button class="btn btn-danger">Logout</button></a>
+                </div>
+                
+            </div>
+      </div>
+        
+    </div>
+</nav>
+
+<!-- navbar end  -->
 
     <div class="container">
+      <h2 class="text-center">Users</h2>
       <table class="table">
         <thead>
           <tr>
@@ -37,12 +67,12 @@
             <td>{{.Email}}</td>
 
             {{if .Status}}
-              <td><a href="/admin/blockuser/block/{{.UserId}}" class="btn btn-danger">TO BLOCK</a></td>
+              <td><a href="/admin/blockuser/block/{{.UserId}}" class="btn btn-danger" style="width: 130px;">TO BLOCK</a></td>
             {{else}}
-            <td><a href="/admin/blockuser/unblock/{{.UserId}}" class="btn btn-success">TO UNBLOCK</a></td>
+            <td><a href="/admin/blockuser/unblock/{{.UserId}}" class="btn btn-success" style="width: 130px;">TO UNBLOCK</a></td>
             {{end}}
             
-            <td><a href="/admin/deleteuser/{{.UserId}}" class="btn btn-danger">DELETE</a></td>
+            <td><a href="/admin/deleteuser/{{.UserId}}" class="btn"  style="width: 130px; background-color: rgb(179, 0, 0);">DELETE</a></td>
           </tr>
           {{end}}
         </tbody>

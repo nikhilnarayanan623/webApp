@@ -1,0 +1,660 @@
+\d
+INSERT INTO test (id, name, age) VALUES(1 , 'NIKHIL N', 20);
+SELECT * FROM test;
+SELECT COALESCE(id,name,age) FROM test;
+SELECT COALESCE(id,age) FROM test;
+INSERT INTO test (age) VALUES (22),(34);
+SELECT COALESCE(id,age) FROM test;
+SELECT COALESCE(eamil , 'Email Not Provided') FROM test;
+SELECT COALESCE(eamil , 'Email Not Provided') FROM person;
+SELECT COALESCE(person.eamil , 'Email Not Provided') FROM person;
+SELECT COALESCE(eamil , 'Email Not Provided') FROM person;
+\d
+\d person;
+SELECT COALESCE(email,'Email not provided') FROM person;
+SELECT COALESCE(email,name + 'email not provided') FROM person;
+SELECT COALESCE(email,first_name + 'email not provided') FROM person;
+SELECT COALESCE(email,first_name) FROM person;
+SELECT COALESCE(email , CONCAT(name , 'email not giver')) FROM person;
+SELECT COALESCE(email , CONCAT(first_name , 'email not giver')) FROM person;
+SELECT COALESCE(eamil , CONCAT('User ',first_name, ' not provided the eamil')) FORM person;
+SELECT COALESCE(eamil , CONCAT('User ',first_name, ' not provided the eamil')) FROM person;
+SELECT COALESCE(email , CONCAT('User ',first_name, ' not provided the eamil')) FORM person;
+SELECT COALESCE(email , CONCAT('User ',first_name, ' not provided the eamil')) FROM person;
+SELECT 10 / 0;
+SELECT NULLIF(12,12);
+SELECT NULLIF(12,32);
+SELECT COALESCE(12 , NULLIF(12,0));
+SELECT COALESCE(12 / NULLIF(12,0) , 0);
+SELECT COALESCE(12 / NULLIF(0,0) , 0);
+SELECT NOW();
+SELECT NOW()::DATE;
+SELECT NOW()::TIME;
+SELECT NOW() - INTERVAL '10 YEAR';
+SELECT NOW() - INTERVAL '10 YEARS';
+SELECT NOW() - INTERVAL '10 YEA';
+SELECT NOW() - DATE'2000-12-12';
+SELECT ('123'):INT ;
+SELECT ('123')::INT ;
+SELECT '123'::INT ;
+SELECT EXTRACT (YEAR FROM NOW());
+SELECT EXTRACT (DATE FROM NOW());
+SELECT EXTRACT (DAY FROM NOW());
+SELECT EXTRACT (DAY TIME FROM NOW());
+SELECT EXTRACT (TIME FROM NOW() , YEAR FROM NOW());
+SELECT EXTRACT (TIME FROM NOW());
+SELECT EXTRACT (MINUTE FROM NOW());
+SELECT EXTRACT (HOUR FROM NOW());
+SELECT EXTRACT (MONTH FROM NOW());
+SELECT EXTRACT (CENTURY FROM NOW());
+SELECT id,first_name,last_name,gender,country_of_birth,date_of_birth , (date_of_birth - NOW()) FROM person;
+SELECT id,first_name,last_name,gender,country_of_birth,date_of_birth , (date_of_birth - NOW())::YEAR AS age FROM person;
+SELECT id,first_name,last_name,gender,country_of_birth,date_of_birth , (NOW() - date_of_birth) AS age FROM person;
+SELECT id,first_name,last_name,gender,country_of_birth,date_of_birth , AGE((NOW() ,date_of_birth)) AS age FROM person;
+ALTER TABLE person ADD CONSTRAINT unique_eamil UNIQUE(email);
+\d person;
+ALTER TABLE person DROP CONSTRAINT UNIQUE unique_eamil;
+ALTER TABLE person DROP CONSTRAINT unique_eamil;
+\d person;
+ALTER TABLE person ADD CONSTRAINT unique_email UNIQUE(email);
+\d person;
+SELECT gender,COUNT(*) FROM person GROUP BY gender;
+SELECT gender,COUNT(*) FROM person GROUP BY gender IN('Male','Female');
+SELECT gender,COUNT(*) FROM person GROUP BY gender HAVING gender = 'Male';
+SELECT gender,COUNT(*) FROM person GROUP BY gender HAVING gender IN('Male');
+SELECT gender,COUNT(*) FROM person GROUP BY gender HAVING gender IN('Male','Female');
+DELETE FROM TABLE person WHERE gender <> 'Male' OR gender <> 'Female';
+DELETE FROM person WHERE gender <> 'Male' OR gender <> 'Female';
+SELECT * FROM person;
+\i /home/nikhil382/Downloads/person.sql;
+SELECT * FROM person;
+DELETE FROM person WHERE gender <> 'Male';
+DELETE FROM person;
+\i /home/nikhil382/Downloads/person.sql;
+DELETE FROM person WHERE gender <> 'Male' AND gender <> 'Female';
+SELECT gender,COUNT(*) FROM person GROUP BY gender;
+ALTER TABLE person ADD CONSTRAINT gender_check CHECK(gender = 'Male' O
+R gender = 'Female');
+ALTER TABLE person ADD CONSTRAINT gender_check CHECK(gender = 'Male' OR gender = 'Female');
+INSER INTO TABLE person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N',Hello',India',DATE'2002-03-24');
+INSERT INTO TABLE person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N',Hello',India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N',',India',DATE'2002-03-24');
+INSERT INTO TABLE person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N',Hello',India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N',Hello',India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N','Hello','India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N','Male','India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,country_of_birth,date_of_birth) VALUES ('Nikhil','N','Malee','India',DATE'2002-03-24');
+SELECT COUNT(*) FROM person;
+DELETE FROM person WHERE first_name LIKE 'A%';
+SELECT first_name FROM person GROUP BY first_name HAVING LIKE 'B%';
+SELECT first_name FROM person GROUP BY first_name HAVING first_name LIKE 'B%';
+SELECT first_name FROM person GROUP BY first_name HAVING first_name LIKE 'A%';
+SELECT first_name,email FROM person ORDER BY first_name;
+SELECT first_name,email FROM person ORDER BY first_name DESC;
+\d person
+SELECT first_name,COUNT(*) FROM person GOUP BY first_name HAVING first_name LIKE 'A-Z'; 
+SELECT first_name,COUNT(*) FROM person GOUP BY first_name;
+SELECT first_name,COUNT(*) FROM person GrOUP BY first_name;
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name IN('B%', 'C%');
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name IN('B', 'C');
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name IN('%');
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name IN('G');
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name IN('Nikhil');
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name ;
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name LIKE 'A-Z';
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name LIKE 'A';
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name LIKE 'A%';
+SELECT first_name,COUNT(*) FROM person GROUP BY first_name HAVING first_name LIKE 'B%';
+ALTER TABLE person ADD COLUMN test;
+ALTER TABLE person ADD COLUMN test VARCHAR(34);
+\d person
+ALTER TABLE person DELETE COLUMN test;
+ALTER TABLE person DROP COLUMN test;
+\d person;
+ SELECT * FROM person;
+ SELECT * FROM person ORDER BY id;
+DROP TABLE person;
+\i /home/nikhil382/Downloads/person.sql;
+SELECT * FROM person WHERE email = 'NULL';
+SELECT * FROM person WHERE email = NULL;
+SELECT * FROM person WHERE email = null;
+SELECT * FROM person WHERE email = '';
+SELECT * FROM person WHERE email = null;
+SELECT * FROM person;
+SELECT * FROM person WHERE email LIKE NULL;
+SELECT email,COUNT(*) FROM person  HAVING email = NULL;
+SELECT email,COUNT(email) FROM person  HAVING email = NULL;
+SELECT email,COUNT(email) FROM person GROUP BY email  HAVING email = NULL;
+SELECT email,COUNT(email) FROM person GROUP BY email;
+SELECT * FROM person;
+SELECT eamil FROM person GROUP BY email;
+SELECT email FROM person GROUP BY email;
+SELECT email,COUNT(*) FROM person GROUP BY email;
+SELECT email,COUNT(*) FROM person GROUP BY email HAVING email = NULL;
+SELECT email,COUNT(*) FROM person GROUP BY email HAVING email = NIL;
+SELECT email,COUNT(*) FROM person GROUP BY email HAVING email = null;
+SELECT email,COUNT(*) FROM person GROUP BY email HAVING email ISNULL;
+SELECT * FROM person WHERE email ISNULL AND id % 2 = 0;
+SELECT * FROM person WHERE email ISNULL AND id % 123 = 0;
+UPDATE person SET email = 'Nadean@gmail.com' WHERE id = 492;
+SELECT * FROM person WHERE email ISNULL AND id % 123 = 0;
+UPDATE person SET email = 'test@gamil.com' WHERE id = 492;
+SELECT * FROM person WHERE id = 492;
+UPDATE person SET email = 'nadean@gmail.com' WHERE email = 'test@gmail.com';
+UPDATE person SET email = 'nadean@gmail.com' WHERE email = 'test@gmil.com';
+UPDATE person SET email = 'nadean@gmail.com' WHERE email = 'test@gamil.com';
+UPDATE person SET (first_name = 'Nikhli') WHERE first_name = 'Nadean';
+UPDATE person SET first_name = 'Nikhlil' WHERE first_name = 'Nadean';
+SELECT * FROM person WHERE first_name = 'Nikhil';
+SELECT * FROM person WHERE first_name = 'Nikhlil';
+UPDATE person SET first_name WHERE id = 492;
+UPDATE person SET first_name = 'Nikhil'  WHERE id = 492;
+UPDATE person SET last_name = 'N' WHERE first_name = 'Nikhil';
+UPDATE person SET countr_of_birth = 'India' WHERE first_name LIKE 'N%';
+UPDATE person SET country_of_birth = 'India' WHERE first_name LIKE 'N%';
+UPDATE peson SET last_name = 'N', email = 'nikhilnaryanan623@gmail.com',gender = 'Male', country_of_birth = 'India' WHERE first_name = 'Nikhil';
+UPDATE person SET last_name = 'N', email = 'nikhilnaryanan623@gmail.com',gender = 'Male', country_of_birth = 'India' WHERE first_name = 'Nikhil';
+SELECT * FROM person WHERE first_name = 'Nikhil';
+UPATE person SET date_of_birth = DATE'2002-03-24' WHERE first_name = 'Nikhil';
+UPDATE person SET date_of_birth = DATE'2002-03-24' WHERE first_name = 'Nikhil';
+SELECT * FROM person WHERE first_name = 'Nikhl';
+SELECT * FROM person WHERE first_name = 'Nikhil';
+UPDATE person SET email = 'test@gmail.com' WHERE id/12 = 0;
+\d test;
+\d person;
+ALTER TABLE person ADD CONSTRAINT gender_check CHECK(gender = 'Male' OR gender = 'Female' );
+DELETE person WHERE gender <> 'Male' AND gender <> 'Female';
+DELETE person WHERE gender <> 'Male' AND gender <> 'Female';
+DELETE FROM person WHERE gender <> 'Male' AND gender <> 'Female';
+ALTER TABLE person ADD CONSTRAINT gender_check CHECK (gender = 'Male' OR gender = 'Female');
+SELECT * FROM person ;
+SELECT * FROM person WHERE id = 12;
+INSERT INTO person (id,first_name,last_name,email,gender,country_of_birth,date_of_birth)  VALUES (12, Joella, Stone, jstoneb@tumblr.com, 'Female', 'Nigeria', DATE'2009-07-15')
+SELECT * FROM person WHERE id = 12;
+INSERT INTO person (id,first_name,last_name,email,gender,country_of_birth,date_of_birth)  VALUES (12, Joella, Stone, jstoneb@tumblr.com, 'Female', 'Nigeria', DATE'2009-07-15');
+INSERT INTO person (id,first_name,last_name,email,gender,country_of_birth,date_of_birth)  VALUES (12, Joella, Stone, jstoneb@tumblr.com, 'Female', 'Nigeria', DATE'2009-07-15');
+INSERT INTO person (id,first_name,last_name,email,gender,country_of_birth,date_of_birth)  VALUES (12, Joella, Stone, jstoneb@tumblr.com, 'Female', 'Nigeria', DATE'2009-07-15')
+;
+INSERT INTO person (id,first_name,last_name,email,gender,country_of_birth,date_of_birth)  VALUES (12, Joella, Stone, jstoneb@tumblr.com, 'Female', 'Nigeria', DATE'2009-07-15')
+ON CONFLICT DO NOTHING;
+INSERT INTO person (id,first_name,last_name,email,gender,country_of_birth,date_of_birth)  VALUES (12, 'Joella', 'Stone', 'jstoneb@tumblr.com', 'Female', 'Nigeria', DATE'2009-07-15';
+"
+"
+=
++
+\c test
+\q
+SELECT * FROM person WHERE first_name = 'Nikhil';
+SELECT * FROM person WHERE id = 1;
+SELECT * FROM person WHERE first_name = 'Nikhli';
+SELECT * FROM person WHERE first_name = 'Nikhil';
+SELECT person.first_nam , car.make,car.model,car.price FROM person
+JOIN car ON person.car_id = car.id;
+SELECT person.first_name , car.make,car.model,car.price FROM person
+JOIN car ON person.car_id = car.id;
+SELECT * FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+SELECT * FROM person 
+RIGHT JOIN car ON person.car_id = car.id;
+INSERT INTO car (
+make,model,price)
+VALUES ('BMW','G10','98988.89');
+SELECT * FROM person
+RIGHT JOIN car ON person.car_id = car.id;
+left join;
+SELECT person.first_name, car.make,car.model FROM person
+RIGHT JOIN car ON person.car_id = car.id;
+SELECT first_name FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+SELECT first_name , id FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+SELECT first_name , price FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+SELECT person.id, person.first_name , car.id,car.price FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+SELECT person.id AS person_id, person.first_name , car.id,car AS car_id .price FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+SELECT person.id AS person_id, person.first_name , car.id AS car_id, car.price FROM person 
+LEFT JOIN car ON person.car_id = car.id;
+\l
+\c newdb
+CREATE TABLE student(
+id BIGSERIAL NOT NULL PRIMARY KEY,
+name VARCHAR(50) NOT NULL,
+pand_id UNIQUE(pan);
+'
+re'
+;
+:
+=;
+\d
+SELECT * FROM person;
+--
+(--)
+\d
+\c newdb
+\d
+\d student,pan;
+\d student;
+INSERT INTO student(student_name,subject,pan_id) VALUES ('NIKHIL','WEB DEV',1);
+\D pan
+\d pan
+INSERT INTO pan (pan_name,age) VALUES('Nikhil',20),('Sarath',22);
+INSERT INTO student(student_name,subject) VALUES ('Sarath','WEB DEV');
+UPDATE student SET pan_id = 1 WHERE sudent_name = 'Nikhil'
+;
+UPDATE student SET pan_id = 1 WHERE student_name = 'Nikhil'
+;
+SELECT * FROM student;
+INSERT INTO student('student_name',subject) VALUES('Nikhil','WEB DEV');
+INSERT INTO student(student_name,subject) VALUES('Nikhil','WEB DEV');
+SELECT * FROM person 
+JOIN pan ON student.pan_id = pan.id;
+SELECT * FROM student 
+JOIN pan ON student.pan_id = pan.id;
+UPDATE student SET pan_id = 1 WHERE student.student_name = 'Nikhil';
+SELECT * FROM student;
+UPDATE student SET id = 1 WHERE student_name = 'Nikhil';
+SELECT * FROM student;
+UPDATE student SET id = 2 WHERE student_name ILIKE = 's%';
+UPDATE student SET id = 2 WHERE student_name ILIKE  's%';
+SELECT * FROM student 
+JOIN pan ON student.pan_id = pan.id;
+SELECT * FROM student;
+UPDATE student SET pan_id = 2 WHERE student_name ILIKE 's%';
+SELECT * FROM student JOIN pan ON  student.pan_id = pan.id;
+UPDATE student SET pan_id = NULL WHER student_name LIKE 'S%';
+UPDATE student SET pan_id = NULL WHERE student_name LIKE 'S%';
+SELECT * FROM student;
+SELECT * FROM  student JOIN pan ON student.pan_id = pan.id;
+SELECT * FROM student LEFT JOIN pan ON student.pan_id = pan.id;
+SELECT * FROM student RIGHT JOIN pan ON student.pan_id = pan.id;
+\copy (SELECT * FROM student JOIN pan ON student.pan_id = pan.id) TO '/home/nikhil382/Downloads/panCar.csv' DELIMITER ',' CSV HEADER;
+\copy (SELECT * FROM student LEFT JOIN pan ON student.pan_id = pan.id) TO '/home/nikhil382/Downloads/panCar.csv' DELIMITER ',' CSV HEADER;
+\copy (SELECT * FROM student LEFT JOIN pan ON student.pan_id = pan.id) TO '/home/nikhil382/Downloads/panCar.csv' DELIMITER '   ' CSV HEADER;
+\copy (SELECT * FROM student LEFT JOIN pan ON student.pan_id = pan.id) TO '/home/nikhil382/Downloads/panCar.csv' DELIMITER ' ' CSV HEADER;
+\copy (SELECT * FROM student LEFT JOIN pan ON student.pan_id = pan.id) TO '/home/nikhil382/Downloads/panCar.csv' DELIMITER ',' CSV HEADER;
+\copy (SELECT * FROM student LEFT JOIN pan ON student.pan_id = pan.id) TO '/home/nikhil382/Downloads/panCar.csv' DELIMITER ' ' CSV HEADER;
+SELECT * FROM pg_available_extension;
+SELECT * FROM pg_available_extension
+;
+SELECT * FROM pg_available_extensions;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+SELECT uuid-ossp FROM pg_extensions;
+SELECT uuid-ossp FROM pg_extension;
+SELECT 'uuid-ossp' FROM pg_extension;
+SELECT * FROM pg_extensions WHERE extension LIKE 'u%';
+SELECT * FROM pg_extension WHERE extension LIKE 'u%';
+SELECT * FROM pg_extension WHERE extensions LIKE 'u%';
+SELECT * FROM pg_available_extensions;
+\df
+SELECT uuid_generate_v1();
+SELECT uuid_generate_v4();
+\i /home/nikhil382/Documents/uuid.sql;
+\i /home/nikhil382/Documents/uuid.sql;
+DROP TABLE person;
+\i /home/nikhil382/Documents/uuid.sql;
+DROP TABLE car;
+\i /home/nikhil382/Documents/uuid.sql;
+\i /home/nikhil382/Documents/uuid.sql;
+SELECT * FROM car;
+\i /home/nikhil382/Documents/uuid.sql;
+\dt
+DROP table car;
+\i /home/nikhil382/Documents/uuid.sql;
+\i /home/nikhil382/Documents/uuid.sql;
+select * from car;
+DROP TABLE car;
+CREATE TABLE car (
+    car_uuid UUID NOT NULL PRIMARY KEY,
+    make VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    price NUMERIC (19, 2) NOT NULL
+);
+DROP TABLE car;
+\i /home/nikhil382/Documents/uuid.sql;
+CREATE TABLE person (
+    person_uuid UUID NOT NULL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(11) NOT NULL,
+    email VARCHAR(50),
+    country_of_birth VARCHAR(30) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    car_uuid UUID REFERENCES car(car_uuid) NOT NULL,
+
+    UNIQUE (car_id)
+
+);
+DROP TABLE car;
+DROP TABLE person;
+\i /home/nikhil382/Documents/uuid.sql;
+
+INSERT INTO person (first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES ('Nikhil','N','Male','nikhil@gmail.com','India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES ('Sarath','P R','Male','sarath@gmail.com','India',DATE'2000-04-12');
+INSERT INTO person (first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES ('Dinson','C','Male','dinson@gmail.com','India',DATE'1998-10-23');
+drop TABLE person;
+CREATE TABLE person (
+    person_uuid UUID NOT NULL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(11) NOT NULL,
+    email VARCHAR(50),
+    country_of_birth VARCHAR(30) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    car_uuid UUID REFERENCES car(car_uuid),
+
+    UNIQUE (car_uuid)
+
+);
+INSERT INTO person (first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES ('Nikhil','N','Male','nikhil@gmail.com','India',DATE'2002-03-24');
+INSERT INTO person (first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES ('Sarath','P R','Male','sarath@gmail.com','India',DATE'2000-04-12');
+INSERT INTO person (first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES ('Dinson','C','Male','dinson@gmail.com','India',DATE'1998-10-23');
+\dt
+DROP TABLE car;
+DROP TABLE car;
+DROP TABLE person;
+DROP TABLE car;
+\dt
+CREATE TABLE car (
+    car_uuid UUID NOT NULL PRIMARY KEY,
+    make VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    price NUMERIC (19, 2) NOT NULL
+);
+CREATE TABLE person (
+    person_uuid UUID NOT NULL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(11) NOT NULL,
+    email VARCHAR(50),
+    country_of_birth VARCHAR(30) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    car_uuid UUID REFERENCES car(car_uuid),
+
+    UNIQUE (car_uuid)
+
+);
+INSERT INTO car (car_uuid ,make,model,price) VALUES (uuid_generate_v4() ,'Land Rover','Sterling','89329.32');
+INSERT INTO car (car_uuid, make,model,price) VALUES (uuid_generate_v4() ,'GMC','Acadia','49329.32');
+INSERT INTO person (person_uuid, first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES (uuid_generate_v4(),'Nikhil','N','Male','nikhil@gmail.com','India',DATE'2002-03-24');
+INSERT INTO person (person_uuid, first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES (uuid_generate_v4(),'Sarath','P R','Male','sarath@gmail.com','India',DATE'2000-04-12');
+INSERT INTO person (person_uuid, first_name,last_name,gender,email,country_of_birth,date_of_birth) VALUES (uuid_generate_v4(),'Dinson','C','Male','dinson@gmail.com','India',DATE'1998-10-23');
+SELECT * FROM car;
+SELECT * from person;
+UPDATE person SET car_uuid = car.car_uuid WHERE car.make LIKE 'La%';
+UPDATE person SET person.car_uuid = car.car_uuid WHERE car.make LIKE 'La%';
+UPDATE person SET person.car_uuid = SELECT car_uuid FROM car WHERE make LIKE 'La%';
+UPDATE person SET car_uuid = SELECT car_uuid FROM car WHERE make LIKE 'La%';
+SELECT make, car_uuid FROM car;
+UPDATE person SET car_uuid = 'b8d76c9b-3043-49a7-9c19-6aa7f73b4c61' WHERE first_name LIKE 'Ni%';
+UPDATE person SET car_uuid = 'ed3892cf-21bd-4618-95c5-f5692bca44e3' WHERE first_name ILIKE sA%''
+;
+UPDATE person SET car_uuid = 'ed3892cf-21bd-4618-95c5-f5692bca44e3' WHERE first_name ILIKE 'sA%'
+;
+SELECT * FROM person JOIN car ON person.car_uuid = car.car_uuid;
+\x
+SELECT * FROM person JOIN car ON person.car_uuid = car.car_uuid;
+CREATE DATABASE test1;
+\c test1;
+CREATE TABLE enum_check(
+status ENUM('happy','sad','angry','bore'),
+name VARCHAR(50) );
+CREATE TABLE enum_check(
+status ENUM('happy','sad','angry','bore'),
+name VARCHAR(50) );
+'d
+\d
+'d
+=d
+;d
+\d
+SELECT * FROM person;
+SELECT * FROM person;
+\l
+\l newdb;
+\c newdb
+\d
+SELECT * FROM users;
+SELECT * FROM person;
+\l
+\c postgres;
+\d
+\i ./home/nikhil382/Downloads/person.sql;
+\i /home/nikhil382/Downloads/person.sql;
+SELECT * FROM person;
+SELECT * FROM person;
+SELECT COUNT(*) FROM person;  
+SELECT COUNT(gender) FROM person;  
+SELECT DISTINCT COUNT(gender) FROM person;
+SELECT DISTINCT COUNT(gender) FROM person GROUP BY gender;
+SELECT COUNT(gender) FROM person GROUP BY gender;
+SELECT first_name , COUNT(gender) FROM person GROUP BY gender;
+SELECT gender, COUNT(gender) FROM person GROUP BY gender;
+SELECT gender, COUNT(*) FROM person GROUP BY gender;
+SELECT gender, COUNT(email) FROM person GROUP BY gender;
+SELECT gender,AVG( COUNT(email) ) FROM person GROUP BY gender;
+SELECT gender, COUNT(email) FROM person GROUP BY gender;
+DELETE FROM person WHERE email IS NULL;
+DELETE FROM person WHERE gender IN ('Male');
+DELETE FROM person WHERE gender IN ('Male' OR 'Female');
+DELETE FROM person WHERE gender IN ('Male','Female');
+SELECT * FROM peson GROUP BY gender;
+SELECT * FROM person GROUP BY gender;
+SELECT id FROM person GROUP BY gender;
+SELECT gender FROM person GROUP BY gender;
+DELETE FROM person;
+SELECT * FROM person;
+ALTER TABLE person ADD CONSTRAINT CHECK (gender = 'Male' OR gender = 'Female');
+ALTER TABLE person ADD CONSTRAINT gender_check  CHECK (gender = 'Male' OR gender = 'Female');
+\dt person;
+\d person;
+\i /home/nikhil382/Downloads/person.sql;
+SELECT gender, COUNT(*) FROM person GROUP BY gender;
+ALTER TABLE person DROP CONSTRAINT gender_check;
+ALTER TABLE person ADD CHECK(gender = 'Male' OR gender 'Female');
+ALTER TABLE person CHECK(gender = 'Male' OR gender 'Female');
+ALTER TABLE person ADD CONSTRAINT CHECK(gender = 'Male' OR gender 'Female');
+ALTER TABLE person ADD CONSTRAINT gender_check CHECK(gender = 'Male' OR gender 'Female');
+ALTER TABLE person CHECK(gender = 'Male' OR gender = 'Female');
+ALTER TABLE person ADD CHECK(gender = 'Male' OR gender = 'Female');
+\d person;
+UPDATE preson SET gender = 'Female' , first_name = 'Tester' WHERE id % 3 = 1;
+UPDATE person SET gender = 'Female' , first_name = 'Tester' WHERE id % 3 = 1;
+SELECT * FROM person ORDER BY gender;
+\l
+ALTER USER postgres PASSWORD = 'pass123';
+ALTER USER postgres PASSWORD 'pass123';
+\d
+CREATE DATABASE book_keeper
+\l
+CREATE DATABASE book_keeper
+;
+CREATE DATABASE book_keeper
+;
+\l
+book_keeper TO postgres
+;
+GRAND ALL PRIVILEGES ON book_keeper TO postgres;
+GRAND ALL PRIVILEGES ON book_keeper TO postgres;GRANT ALL PRIVILEGES ON book_keeper TO postgres;
+ALTER DATABASE book_keeper OWNER TO postgres
+;
+\l
+ld
+\d
+:
+;
+SELECT * FROM books;
+SELECT * FROM book_keeper;
+SELECT * FROM people;
+SELECT * FROM people;
+SELECT * FROM books;
+SELECT * FROM people;
+SELECT * FROM books;
+SELECT * FROM books;
+SELECT * FROM people;
+\dt people
+\l
+\d
+\dt people
+\d people
+SELECT * FROM people JOIN books ON people.id = books.PersonID;
+SELECT * FROM people JOIN books ON people.id = books.PersonID;
+\d books
+SELECT * FROM people JOIN books ON people.id = books.person_id;
+\x
+SELECT * FROM people JOIN books ON people.id = books.person_id;
+SELECT name,title FROM people JOIN books ON people.id = books.person_id;
+SELECT name,title FROM people LEFT JOIN books ON people.id = books.person_id;
+SELECT name,title FROM people RIGHT JOIN books ON people.id = books.person_id;
+SELECT * FROM people
+;
+\x
+SELECT * FROM people
+;
+\l
+\c newdb
+\c book_keeper
+1 2 3 4
+5 4 3 2 1
+SELECT * FROM person;
+\d
+SELECT * FROM person;
+\d
+\d user_db
+DROP TABLE user_db;
+DROP TABLE user_dbs;
+\d
+SELECT * FORM users
+;
+SELECT * FroM users
+;
+SELECT * FroM users
+;
+DROP TABLE users;
+SELECT * FroM users
+;
+SELECT * FroM users
+;
+DELETE FROM users;
+SELECT * FroM users
+;
+DELETE FROM users;
+SELECT * FroM users
+;
+DELETE FROM users;
+SELECT * FroM users
+;
+SELECT * FroM users
+;
+\d
+\d
+\d
+\d admin_jwt_black_lists
+\d admin_jwt_black_lists
+DROP TABLE admin_jwt_black_lists
+;
+DROP TABLE admin_jwt_black_lists
+;
+\d
+\d
+\d admin_jwt_black_lists;
+INSERT INTO admin_jwt_black_lists (token_string, end_time) VALUES('test1', 10);
+INSERT INTO admin_jwt_black_lists (token_string, end_time) VALUES('test2', 1);
+SELECT * FORM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+DELETE  FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+DELETE  FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+/x
+;
+\x;
+/x;
+\x
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+DROP TABLE admin_jwt_black_lists;
+\d
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+SELECT * FRoM admin_jwt_black_lists;
+DROP TABLE admin_jwt_black_lists
+;
+\d
+SELECT * From jwt_black_lists;
+SELECT * From jwt_black_lists;
+\d jwt_black_lists;
+DROP TABLE jwt_black_lists;
+\d jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+delete FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+delete FROM users;
+delete FROM users;
+delete FROM users;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM admins;
+SELECT * FROM jwt_black_lists;
+SELECT * FROM users;
+SELECT * FROM users;
+delete FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+delete FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+SELECT * FROM users;
+\d users;
+SELECT * FROM users;
+SELECT * FROM users;
+\d
+\s products

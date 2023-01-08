@@ -35,7 +35,7 @@ func ConnnectToDb() {
 
 func MigrateToDB() {
 
-	if DB.AutoMigrate(&models.Admin{}, &models.User{}, &models.JwtBlackList{}); err != nil {
+	if DB.AutoMigrate(&models.Admin{}, &models.User{}, &models.Product{}, &models.JwtBlackList{}); err != nil {
 		fmt.Println("faild to sync database")
 		return
 	}

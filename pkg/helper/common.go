@@ -17,7 +17,7 @@ import (
 func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 	fmt.Println("jwt setup")
 
-	cookieTime := time.Now().Add(5 * time.Minute).Unix()
+	cookieTime := time.Now().Add(10 * time.Minute).Unix()
 	fmt.Println("jwt setup ", userId)
 
 	// v := reflect.ValueOf(user)
@@ -31,7 +31,7 @@ func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 	if tokenString, err := token.SignedString([]byte(os.Getenv("JWTCODE"))); err == nil {
 		//set cookie
 
-		ctx.SetCookie(name, tokenString, 5*60, "", "", false, true)
+		ctx.SetCookie(name, tokenString, 10*60, "", "", false, true)
 		fmt.Println("successfully setup jwt cookie")
 		return true
 	}
@@ -53,7 +53,8 @@ func GetToken(ctx *gin.Context, name string) (*jwt.Token, bool) {
 	}
 	//check the user in black list or not
 	var jwtBlack models.JwtBlackList
-	db.DB.First(&jwtBlack, "token_string = ?", cookieval)
+
+	db.DB.Find(&jwtBlack, "token_string = ?", cookieval)
 
 	if jwtBlack.ID != 0 {
 		return nil, false //this user is in black list

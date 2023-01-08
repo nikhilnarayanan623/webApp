@@ -24,11 +24,11 @@ func ValidateAdmin(form struct {
 
 	if err := validate.Struct(form); err != nil { //error in
 
-		var errorMessge = map[string]bool{}
+		var errorMessge = map[string]string{}
 
 		for _, er := range err.(validator.ValidationErrors) {
 
-			errorMessge[er.Field()] = true
+			errorMessge[er.Field()] = "Enter " + er.Field() + " Properly"
 		}
 
 		//return the error map and returrn false
@@ -43,14 +43,17 @@ func ValidateAdmin(form struct {
 
 	if admin.ID == 0 { //user not found
 		fmt.Println("admin not found in db")
-		return map[string]bool{"Email": true}, false
+		return map[string]string{
+			"Alert": "You are not an admin",
+			"Color": "text-danger",
+		}, false
 	}
 
 	//hash the password and check the password
 
 	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(form.Password)); err != nil {
 		fmt.Println("password no match")
-		return map[string]bool{"Password": true}, false
+		return map[string]string{"Password": "Wrong Password"}, false
 	}
 
 	//valid admin

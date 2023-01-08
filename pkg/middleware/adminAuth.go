@@ -37,7 +37,10 @@ func AdminAuth(ctx *gin.Context) {
 		//chekc the claims token userId is in database
 
 		var admin models.Admin
-		db.DB.First(&admin, "id = ?", claims["userId"])
+
+		adminId := uint(claims["userId"].(float64))
+
+		db.DB.Find(&admin, "id = ?", adminId)
 
 		if admin.ID == 0 { //admin id not matching
 			ctx.Abort()
@@ -45,9 +48,9 @@ func AdminAuth(ctx *gin.Context) {
 			return
 		}
 
-		ctx.Set("adminId", claims["userId"]) //set the admin details in ctx
+		ctx.Set("adminId", adminId) //set the admin details in ctx
 
-		if ctx.Request.URL.Path != "/admin/home" {
+		if ctx.Request.URL.Path == "/admin" {
 			ctx.Abort()
 			ctx.Redirect(http.StatusSeeOther, "/admin/home")
 			return

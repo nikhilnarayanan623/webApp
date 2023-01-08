@@ -17,4 +17,14 @@ func Admin(router *gin.Engine) {
 
 	router.GET("/admin/:deleteuser/:id", controllers.DeleteUserAdmin)
 	router.GET("/admin/blockuser/:status/:id", controllers.BlockUserAdmin)
+
+	//admin products
+	router.GET("/admin/products", middleware.AdminAuth, controllers.ShowProductsAdmin)
+
+	router.GET("/admin/products/:status/:pid", middleware.AdminAuth, controllers.BlockOrDeleteProductAdmin)
+
+	//add produtct
+
+	router.GET("/admin/addProduct", middleware.AdminAuth, controllers.AddProductGet)
+	router.POST("/admin/addProduct/:from", controllers.AddProductPost)
 }

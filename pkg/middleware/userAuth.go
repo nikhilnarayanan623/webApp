@@ -15,6 +15,8 @@ import (
 
 func UserAuthentication(ctx *gin.Context) {
 
+	fmt.Println("user auth")
+
 	token, ok := helper.GetToken(ctx, "user")
 
 	if !ok { //no token also no cookie
@@ -39,26 +41,40 @@ func UserAuthentication(ctx *gin.Context) {
 			return
 		}
 
-		//chekc the claims token userId is in database
-		var user models.User
-		db.DB.First(&user, "id = ?", claims["userId"])
+		//get the user from database using token claims
+		userId := uint(claims["userId"].(float64))
 
-		if user.ID == 0 || !user.Status { //admin id not matching
+		var user models.User
+		db.DB.Find(&user, "id = ?", userId)
+
+		if user.ID == 0 || !user.Status { //user not found or user blocked by admin
+
+			//check the path that user want to signup login after he is not a valid user or blocked by admin
+
+			if ctx.Request.URL.Path == "/signup" {
+				ctx.Next()
+				return
+			}
+			//any other path just show the login page
 			ctx.Abort()
 			fmt.Println("user not found but jwt is there admin deleted user")
 			controllers.LoginUser(ctx)
-			// ctx.Redirect(http.StatusSeeOther, "/")
 			return
 		}
 
-		ctx.Set("userId", claims["userId"])
+		ctx.Set("userId", userId) //atach the user id in context if user is valid
 
-		if ctx.Request.URL.Path != "/home" {
+		//if the user is valid and enter singnup or login url show home page
+		if ctx.Request.URL.Path == "/" || ctx.Request.URL.Path == "/signup" {
+			ctx.Abort()
 			ctx.Redirect(http.StatusSeeOther, "/home")
 			return
 		}
+
+		//if all condition completed and the url is for home page
 		ctx.Next()
 	} else {
+		//if the token is invalid or cant claim then show login page
 		ctx.Abort()
 		ctx.Redirect(http.StatusSeeOther, "/")
 	}

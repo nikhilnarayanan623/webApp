@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 	"webApp/pkg/db"
 	"webApp/pkg/helper"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -78,10 +80,10 @@ func LoginSubmitUser(ctx *gin.Context) {
 		Password: ctx.Request.PostFormValue("password"),
 	})
 
-	//if any probleme when user validation then show it
+	//if any probleme when user validation then show it on login page
 	if !ok {
 		userMessage = userVal
-		LoginUser(ctx)
+		ctx.Redirect(http.StatusSeeOther, "/")
 		return
 	}
 
@@ -101,9 +103,33 @@ func HomeUser(ctx *gin.Context) {
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	userId, _ := ctx.Get("userId")
+	//userId, _ := ctx.Get("userId") // user id from context
 
-	ctx.HTML(http.StatusOK, "userHome.html", userId)
+	//get all products that stock in db and show it
+
+	var products []models.Product
+	db.DB.Find(&products, "stock_in = ?", true) //find all product
+
+	type fields struct {
+		PID         uint
+		ProductName string
+		Price       float64
+		Description string
+	}
+
+	var results []fields
+
+	for _, res := range products {
+
+		results = append(results, fields{ //append all value to that slice
+			PID:         res.PID,
+			ProductName: res.Name,
+			Price:       res.Price,
+			Description: res.Description,
+		})
+	}
+
+	ctx.HTML(http.StatusOK, "userHome.html", results)
 
 }
 func LogoutUser(ctx *gin.Context) {
@@ -133,4 +159,85 @@ func LogoutUser(ctx *gin.Context) {
 	}
 	//atlast redirect to login page
 	ctx.Redirect(http.StatusSeeOther, "/")
+}
+
+//add to cart for user
+
+func AddToCartUser(ctx *gin.Context) {
+	fmt.Println("add to cart")
+
+	userId, _ := ctx.Get("userId") // user id from context
+
+	pid := ctx.Params.ByName("pid")
+
+	//convver pid to integer
+	if pidInt, err := strconv.Atoi(pid); err == nil {
+
+		// u := uint(userId.(float64))
+		//append the pid to users product column array
+		db.DB.Model(&models.User{}).Where("id = ?", userId).Update("Products", gorm.Expr("array_append(Products, ?)", pidInt))
+
+	}
+	fmt.Println("user id at add to cart ", userId)
+
+	ctx.Redirect(http.StatusSeeOther, "/home")
+}
+
+// show the cart
+func ShowCartUser(ctx *gin.Context) {
+
+	fmt.Println("at Show cart")
+	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+
+	userId, _ := ctx.Get("userId") // user id from context
+
+	var user = models.User{}
+
+	db.DB.Find(&user, "id = ?", userId) //find the user from database
+
+	type Cart struct { // to store each details we want from database
+		ProductName string
+		Price       float64
+		PID         uint
+	}
+
+	var arrayOfCart []Cart //to store all detail of product
+
+	for _, res := range user.Products { //range through the products id array we got from user
+
+		var product models.Product
+
+		db.DB.Find(&product, "p_id = ?", res)
+
+		arrayOfCart = append(arrayOfCart, Cart{
+			ProductName: product.Name,
+			Price:       product.Price,
+			PID:         product.PID,
+		})
+	}
+	fmt.Println("last of show cart")
+	ctx.HTML(http.StatusOK, "userCart.html", arrayOfCart)
+
+}
+
+// remove from cart
+func RemoveFromCartUser(ctx *gin.Context) {
+
+	fmt.Println("at remove from cart")
+
+	//get the product id from params
+
+	pid := ctx.Param("pid")
+
+	//get the user id form context
+	if userId, ok := ctx.Get("userId"); ok {
+		//conver pid string to integer
+
+		if pidInt, err := strconv.Atoi(pid); err == nil { //there is no error to parse the pid to int
+
+			db.DB.Model(&models.User{}).Where("id = ?", userId).Update("Products", gorm.Expr("array_remove(Products, ?)", pidInt))
+		}
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/cart")
 }
