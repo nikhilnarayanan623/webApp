@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+
 	"github.com/nikhilnarayanan623/webApp/pkg/db"
 	"github.com/nikhilnarayanan623/webApp/pkg/models"
 
@@ -75,6 +76,7 @@ func GetToken(ctx *gin.Context, name string) (*jwt.Token, bool) {
 		return nil, false
 	}
 
+	///return token with true
 	return token, true
 }
 

@@ -12,8 +12,8 @@ type User struct {
 	FirstName string `gorm:"not null"`
 	LastName  string `gorm:"not null"`
 
-	Email    string `grom:"unique; not null"`
-	Password string `gorm:"unique; not null"`
+	Email    string `gorm:"type:varchar(100);unique"`
+	Password string `gorm:"not null"`
 	Status   bool   `gorm:"not null"`
 
 	Products pq.Int64Array `gorm:"type:integer[]"`

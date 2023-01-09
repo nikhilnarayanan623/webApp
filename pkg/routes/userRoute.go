@@ -19,9 +19,12 @@ func User(router *gin.Engine) {
 	router.GET("/logout", controllers.LogoutUser)
 
 	//add to cart
+	router.GET("/cart", middleware.UserAuthentication, controllers.ShowCartUser)
 
 	router.GET("/home/addToCart/:pid", middleware.UserAuthentication, controllers.AddToCartUser)
-
-	router.GET("/cart", middleware.UserAuthentication, controllers.ShowCartUser)
 	router.GET("/cart/removeFromCart/:pid", middleware.UserAuthentication, controllers.RemoveFromCartUser)
+
+	//edit user
+	router.GET("/edituser", middleware.UserAuthentication, controllers.EditUserGet)
+	router.POST("/edituser", middleware.UserAuthentication, controllers.EditUserPost)
 }

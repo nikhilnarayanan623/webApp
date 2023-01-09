@@ -11,10 +11,10 @@
 <body>
   <!-- nabar start -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-8">
-                <h4 class=" text-dark">Home Page </h4>    
+    <div class="container mt-2 mb-3">
+        <div class="row justify-content-between">
+            <div class="col-4">
+                <h2 class=" text-dark">Welcome {{.UserName}} </h2>    
             </div>
             <div class="col-2">
                 <div class="row justify-content-end">
@@ -22,10 +22,16 @@
                 </div>
                 
             </div>
-            
+
+            <div class="col-2 ">
+                <div class="row ">
+                    <a href="/edituser"><button class="btn btn-info">Edit Profile</button></a>
+                </div>
+                
+            </div>
             <div class="col-2">
                 <div class="row justify-content-end">
-                    <a href="/logout"style="width: 2rem;"><button class="btn btn-danger">Logout</button></a>
+                    <a href="/logout"><button class="btn btn-danger">Logout</button></a>
                 </div>
                 
             </div>
@@ -44,7 +50,7 @@
 
     <div class="row">
 
-        {{range .}}
+        {{range .Products}}
 
         <div class="col-lg-4 col-md-12 mb-4">
             <div class="card">

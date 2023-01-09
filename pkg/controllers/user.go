@@ -6,9 +6,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/nikhilnarayanan623/webApp/pkg/db"
 	"github.com/nikhilnarayanan623/webApp/pkg/helper"
 	"github.com/nikhilnarayanan623/webApp/pkg/models"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -51,7 +53,7 @@ func SigupSubmitUser(ctx *gin.Context) {
 		return
 	}
 
-	//if is a valid form then the function will sore datas on database
+	//if is a valid form then the function will sore datasToForm on database
 
 	userMessage = message
 	//there is no error then see the login page
@@ -69,6 +71,7 @@ func LoginUser(ctx *gin.Context) {
 	userMessage = nil //after render html then dlete message
 }
 
+// login submit
 func LoginSubmitUser(ctx *gin.Context) {
 	fmt.Println("login submit user")
 
@@ -104,14 +107,13 @@ func HomeUser(ctx *gin.Context) {
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	//userId, _ := ctx.Get("userId") // user id from context
-
 	//get all products that stock in db and show it
 
 	var products []models.Product
 	db.DB.Find(&products, "stock_in = ?", true) //find all product
 
 	type fields struct {
+		UserName    string
 		PID         uint
 		ProductName string
 		Price       float64
@@ -130,9 +132,27 @@ func HomeUser(ctx *gin.Context) {
 		})
 	}
 
-	ctx.HTML(http.StatusOK, "userHome.html", results)
+	//find the user and add the username to results
+	userId, _ := ctx.Get("userId") // user id from context
+
+	var user models.User
+	db.DB.Find(&user, "id = ?", userId)
+
+	//create a struct that can hold products and userNam
+
+	var PassValue = struct { //to pass value to template
+		UserName string
+		Products []fields
+	}{
+		UserName: user.FirstName,
+		Products: results,
+	}
+
+	ctx.HTML(http.StatusOK, "userHome.html", PassValue)
 
 }
+
+// Logout
 func LogoutUser(ctx *gin.Context) {
 	fmt.Println("logout user")
 
@@ -197,9 +217,10 @@ func ShowCartUser(ctx *gin.Context) {
 	db.DB.Find(&user, "id = ?", userId) //find the user from database
 
 	type Cart struct { // to store each details we want from database
+		PID         uint
 		ProductName string
 		Price       float64
-		PID         uint
+		StockIn     bool
 	}
 
 	var arrayOfCart []Cart //to store all detail of product
@@ -210,10 +231,17 @@ func ShowCartUser(ctx *gin.Context) {
 
 		db.DB.Find(&product, "p_id = ?", res)
 
+		//check the product is deleted or not
+
+		if product.PID == 0 {
+			continue
+		}
+
 		arrayOfCart = append(arrayOfCart, Cart{
+			PID:         product.PID,
 			ProductName: product.Name,
 			Price:       product.Price,
-			PID:         product.PID,
+			StockIn:     product.StockIn,
 		})
 	}
 	fmt.Println("last of show cart")
@@ -241,4 +269,106 @@ func RemoveFromCartUser(ctx *gin.Context) {
 	}
 
 	ctx.Redirect(http.StatusSeeOther, "/cart")
+}
+
+// edit user get
+type data struct {
+	UserFristName string
+	UserLastName  string
+	UserEmail     string
+
+	//for error
+	Error interface{}
+}
+
+var datasToForm = data{Error: map[string]string{}} //emtpy map for if no error on form
+
+// ediuser get func
+func EditUserGet(ctx *gin.Context) {
+	fmt.Println("at edit user")
+	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+
+	//type to store user details and error to show
+
+	// get user id
+	if userId, ok := ctx.Get("userId"); ok {
+		//get the user from database
+
+		var user models.User
+		db.DB.Find(&user, "id = ?", userId)
+
+		datasToForm.UserFristName = user.FirstName
+		datasToForm.UserLastName = user.LastName
+		datasToForm.UserEmail = user.Email
+	}
+
+	ctx.HTML(http.StatusOK, "userEditProfile.html", datasToForm)
+	datasToForm.Error = map[string]string{} //clear errors
+}
+
+// edit user post
+func EditUserPost(ctx *gin.Context) {
+	fmt.Println("edit post user")
+
+	userId, ok := ctx.Get("userId")
+
+	if !ok { //didnt get userid the sent an alert to page
+		datasToForm.Error = map[string]string{"Alert": "Can't Updated Details", "Color": "text-success"}
+		ctx.Redirect(http.StatusSeeOther, "/edituser")
+		return
+	}
+
+	//validte the form value using a function that use validator package
+	var form = struct {
+		FirstName string `validate:"required"`
+		LastName  string `validate:"required"`
+		Email     string `validate:"required,email"`
+		Password  string `validate:"required"`
+	}{
+		FirstName: ctx.Request.PostFormValue("fname"),
+		LastName:  ctx.Request.PostFormValue("lname"),
+		Email:     ctx.Request.PostFormValue("email"),
+		Password:  ctx.Request.PostFormValue("password"),
+	}
+
+	//validate the from
+
+	validate := validator.New()
+
+	if err := validate.Struct(form); err != nil {
+
+		var formErrors = map[string]string{}
+
+		for _, er := range err.(validator.ValidationErrors) {
+
+			formErrors[er.Namespace()] = "Enter " + er.Field() + " Properly"
+		}
+		datasToForm.Error = formErrors //assign to datasToForm error
+		ctx.Redirect(http.StatusSeeOther, "/edituser")
+		return
+	}
+
+	//update the database
+
+	// hash the password
+	if hashPass, err := bcrypt.GenerateFromPassword([]byte(form.Password), 10); err == nil { //no error to hash the password
+
+		result := db.DB.Model(&models.User{}).Where("id = ?", userId).Updates(&models.User{
+			FirstName: form.FirstName,
+			LastName:  form.LastName,
+			Email:     form.Email,
+			Password:  string(hashPass),
+		})
+
+		if result.Error != nil { //error user is already exist
+
+			datasToForm.Error = map[string]string{"Alert": "User Alredy Exist", "Color": "text-danger"}
+			ctx.Redirect(http.StatusSeeOther, "/edituser")
+			return
+		}
+	}
+
+	//sent an successfull message to page
+	datasToForm.Error = map[string]string{"Alert": "Successfully Updated Details", "Color": "text-success"}
+	ctx.Redirect(http.StatusSeeOther, "/edituser")
 }

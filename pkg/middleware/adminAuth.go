@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
 	"github.com/nikhilnarayanan623/webApp/pkg/controllers"
 	"github.com/nikhilnarayanan623/webApp/pkg/db"
 	"github.com/nikhilnarayanan623/webApp/pkg/helper"
@@ -26,6 +27,7 @@ func AdminAuth(ctx *gin.Context) {
 		return
 	}
 
+	//claim the token to get the admin id and expire time
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid { //valid token
 		//chek the token time is over
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
@@ -42,7 +44,7 @@ func AdminAuth(ctx *gin.Context) {
 
 		db.DB.Find(&admin, "id = ?", adminId)
 
-		if admin.ID == 0 { //admin id not matching
+		if admin.ID == 0 { //admin id not match then render login page
 			ctx.Abort()
 			controllers.LoginAdmin(ctx)
 			return
@@ -50,14 +52,14 @@ func AdminAuth(ctx *gin.Context) {
 
 		ctx.Set("adminId", adminId) //set the admin details in ctx
 
-		if ctx.Request.URL.Path == "/admin" {
+		if ctx.Request.URL.Path == "/admin" { //check the url is login page if it is login page then redirect to home page
+
 			ctx.Abort()
 			ctx.Redirect(http.StatusSeeOther, "/admin/home")
 			return
 		}
-		ctx.Next()
 
-	} else {
+	} else { //if token not valid or cant claim the token
 		ctx.Abort()
 		ctx.Redirect(http.StatusSeeOther, "/admin")
 	}
