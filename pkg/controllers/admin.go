@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
 	"github.com/nikhilnarayanan623/webApp/pkg/db"
 	"github.com/nikhilnarayanan623/webApp/pkg/helper"
 	"github.com/nikhilnarayanan623/webApp/pkg/models"
@@ -167,15 +168,6 @@ func AddProductPost(ctx *gin.Context) {
 
 	price, _ := strconv.Atoi(ctx.Request.PostFormValue("price"))
 
-	// if err != nil {
-	// 	fmt.Println("error on parsing price value from form")
-	// 	ctx.Redirect(http.StatusSeeOther, "/admin/addProduct")
-
-	// 	adminMessage = map[string]string{
-	// 		"Price": "Enter Price Properly",
-	// 	}
-	// 	return
-	// }
 	fmt.Println("price int", price)
 
 	var form = struct {
@@ -294,4 +286,42 @@ func BlockOrDeleteProductAdmin(ctx *gin.Context) {
 	//after redirect to product page
 
 	ctx.Redirect(http.StatusSeeOther, "/admin/products")
+}
+
+// Edit Product
+var forProductPage = struct {
+	Product interface{}
+	Error   interface{}
+}{Product: map[string]string{}, Error: map[string]string{}} //assign empty string/string map
+
+// edit product
+func EditProductGet(ctx *gin.Context) {
+	fmt.Println("edit product get")
+
+	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+
+	pid := ctx.Param("pid")
+
+	if pidInt, err := strconv.Atoi(pid); err == nil { //if no error to convert string of pid to int
+		//find the product
+		var prodcut models.Product
+
+		db.DB.Find(&prodcut, "p_id = ?", pidInt)
+
+		//create strcut that can hold all value of product and store it on forProductPage
+		forProductPage.Product = map[string]interface{}{
+			"PID":         prodcut.PID,
+			"ProductName": prodcut.Name,
+			"Price":       prodcut.Price,
+			"Description": prodcut.Description,
+		}
+	}
+
+	ctx.HTML(http.StatusOK, "adminEditProduct.html", forProductPage)
+	adminMessage = nil
+
+}
+
+func EditProductPost(ctx *gin.Context) {
+	fmt.Println("edit product post")
 }

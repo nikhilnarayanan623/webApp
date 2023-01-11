@@ -25,6 +25,7 @@ func User(router *gin.Engine) {
 	router.GET("/cart/removeFromCart/:pid", middleware.UserAuthentication, controllers.RemoveFromCartUser)
 
 	//edit user
-	router.GET("/edituser", middleware.UserAuthentication, controllers.EditUserGet)
+	router.GET("/edituser/", middleware.UserAuthentication, controllers.EditUserGet)
 	router.POST("/edituser", middleware.UserAuthentication, controllers.EditUserPost)
+
 }

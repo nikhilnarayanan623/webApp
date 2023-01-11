@@ -27,4 +27,7 @@ func Admin(router *gin.Engine) {
 
 	router.GET("/admin/addProduct", middleware.AdminAuth, controllers.AddProductGet)
 	router.POST("/admin/addProduct/:from", controllers.AddProductPost)
+
+	//edit product
+	router.GET("/admin/editdProduct/:pid", middleware.AdminAuth, controllers.EditProductGet)
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/nikhilnarayanan623/webApp/pkg/db"
 	"github.com/nikhilnarayanan623/webApp/pkg/models"
 
@@ -89,4 +90,12 @@ func GetCookieVal(ctx *gin.Context, name string) (string, bool) {
 
 	fmt.Println("faild to get cookie")
 	return "", false
+}
+
+// func to help validation
+func CustomValidForUpdate(fl validator.FieldLevel) bool {
+
+	value := fl.Field().String()
+
+	return value == "" || len(value) > 3 || len(value) < 40 //if any of this condition true then dont take it as error
 }

@@ -53,7 +53,7 @@ func SigupSubmitUser(ctx *gin.Context) {
 		return
 	}
 
-	//if is a valid form then the function will sore datasToForm on database
+	//if is a valid form then the function will sore datasToEditPage on database
 
 	userMessage = message
 	//there is no error then see the login page
@@ -281,7 +281,7 @@ type data struct {
 	Error interface{}
 }
 
-var datasToForm = data{Error: map[string]string{}} //emtpy map for if no error on form
+var datasToEditPage = data{Error: map[string]string{}} //emtpy map for if no error on form
 
 // ediuser get func
 func EditUserGet(ctx *gin.Context) {
@@ -297,13 +297,13 @@ func EditUserGet(ctx *gin.Context) {
 		var user models.User
 		db.DB.Find(&user, "id = ?", userId)
 
-		datasToForm.UserFristName = user.FirstName
-		datasToForm.UserLastName = user.LastName
-		datasToForm.UserEmail = user.Email
+		datasToEditPage.UserFristName = user.FirstName
+		datasToEditPage.UserLastName = user.LastName
+		datasToEditPage.UserEmail = user.Email
 	}
 
-	ctx.HTML(http.StatusOK, "userEditProfile.html", datasToForm)
-	datasToForm.Error = map[string]string{} //clear errors
+	ctx.HTML(http.StatusOK, "userEditProfile.html", datasToEditPage)
+	datasToEditPage.Error = map[string]string{} //clear errors
 }
 
 // edit user post
@@ -313,62 +313,84 @@ func EditUserPost(ctx *gin.Context) {
 	userId, ok := ctx.Get("userId")
 
 	if !ok { //didnt get userid the sent an alert to page
-		datasToForm.Error = map[string]string{"Alert": "Can't Updated Details", "Color": "text-success"}
+		datasToEditPage.Error = map[string]string{"Alert": "Can't Updated Details", "Color": "text-success"}
 		ctx.Redirect(http.StatusSeeOther, "/edituser")
 		return
 	}
 
 	//validte the form value using a function that use validator package
 	var form = struct {
-		FirstName string `validate:"required"`
-		LastName  string `validate:"required"`
-		Email     string `validate:"required,email"`
-		Password  string `validate:"required"`
+		FirstName string `validate:"CustomValidForUpdate"`
+		LastName  string `validate:"CustomValidForUpdate"`
+		Email     string `validate:"CustomValidForUpdate"`
+		Password  string
 	}{
 		FirstName: ctx.Request.PostFormValue("fname"),
 		LastName:  ctx.Request.PostFormValue("lname"),
 		Email:     ctx.Request.PostFormValue("email"),
 		Password:  ctx.Request.PostFormValue("password"),
 	}
+	// check all field is empty if empty no need to validate or update
+	if form.Email == "" && form.FirstName == "" && form.LastName == "" && form.Password == "" {
+		datasToEditPage.Error = map[string]string{"Alert": "Nothing To Update", "Color": "text-danger"}
+		ctx.Redirect(http.StatusSeeOther, "/edituser")
+		return
+	}
 
-	//validate the from
+	//if some field have valued then validate it
 
 	validate := validator.New()
+	validate.RegisterValidation("CustomValidForUpdate", helper.CustomValidForUpdate)
+	fmt.Println("test1")
 
 	if err := validate.Struct(form); err != nil {
-
+		fmt.Println("test2")
 		var formErrors = map[string]string{}
 
 		for _, er := range err.(validator.ValidationErrors) {
 
 			formErrors[er.Namespace()] = "Enter " + er.Field() + " Properly"
 		}
-		datasToForm.Error = formErrors //assign to datasToForm error
+
+		datasToEditPage.Error = formErrors //assign to datasToEditPage error
 		ctx.Redirect(http.StatusSeeOther, "/edituser")
 		return
 	}
 
-	//update the database
+	//check if password is empty then no need to hash the pass and update the pass
 
-	// hash the password
-	if hashPass, err := bcrypt.GenerateFromPassword([]byte(form.Password), 10); err == nil { //no error to hash the password
+	var result *gorm.DB
 
-		result := db.DB.Model(&models.User{}).Where("id = ?", userId).Updates(&models.User{
+	if form.Password == "" {
+		result = db.DB.Model(&models.User{}).Where("id = ?", userId).Updates(&models.User{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
-			Password:  string(hashPass),
 		})
 
-		if result.Error != nil { //error user is already exist
+	} else { // hash the password and update
 
-			datasToForm.Error = map[string]string{"Alert": "User Alredy Exist", "Color": "text-danger"}
-			ctx.Redirect(http.StatusSeeOther, "/edituser")
-			return
+		if hashPass, err := bcrypt.GenerateFromPassword([]byte(form.Password), 10); err == nil { //no error to hash the password
+
+			result = db.DB.Model(&models.User{}).Where("id = ?", userId).Updates(&models.User{
+				FirstName: form.FirstName,
+				LastName:  form.LastName,
+				Email:     form.Email,
+
+				Password: string(hashPass),
+			})
 		}
+
+	}
+
+	if result.Error != nil { //error user is already exist
+
+		datasToEditPage.Error = map[string]string{"Alert": "User Alredy Exist", "Color": "text-danger"}
+		ctx.Redirect(http.StatusSeeOther, "/edituser")
+		return
 	}
 
 	//sent an successfull message to page
-	datasToForm.Error = map[string]string{"Alert": "Successfully Updated Details", "Color": "text-success"}
+	datasToEditPage.Error = map[string]string{"Alert": "Successfully Updated Details", "Color": "text-success"}
 	ctx.Redirect(http.StatusSeeOther, "/edituser")
 }

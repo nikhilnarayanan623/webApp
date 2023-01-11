@@ -52,6 +52,7 @@
             <td >{{.ProductName}}</td>
             <td scope="row">{{.Price}}</td>
             <td scope="row">{{.Description}}</td>
+            <td><a href="/admin/editdProduct/{{.PID}}" class="btn bg-warning" style="width: 130px;">Edit</a></td>
             {{if .StockIn}}
             <td><a href="/admin/products/block/{{.PID}}" class="btn btn-danger" style="width: 130px;">Block</a></td>
             {{else}}
