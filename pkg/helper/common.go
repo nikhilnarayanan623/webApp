@@ -17,10 +17,10 @@ import (
 // gin context for setup cookie
 // name to store key and userdetails as value in jwt map
 func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
+
 	fmt.Println("jwt setup")
 
 	cookieTime := time.Now().Add(10 * time.Minute).Unix()
-	fmt.Println("jwt setup ", userId)
 
 	// v := reflect.ValueOf(user)
 
@@ -34,6 +34,7 @@ func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 		//set cookie
 
 		ctx.SetCookie(name, tokenString, 10*60, "", "", false, true)
+
 		fmt.Println("successfully setup jwt cookie")
 		return true
 	}
@@ -43,6 +44,7 @@ func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 }
 
 // get token if token is not in black list of dtabase
+
 func GetToken(ctx *gin.Context, name string) (*jwt.Token, bool) {
 	//delete expired token from black list database
 	db.DeleteBlackListToken()
@@ -97,5 +99,12 @@ func CustomValidForUpdate(fl validator.FieldLevel) bool {
 
 	value := fl.Field().String()
 
-	return value == "" || len(value) > 3 || len(value) < 40 //if any of this condition true then dont take it as error
+	return value == "" || len(value) > 4 && len(value) < 40 //if any of this condition true then dont take it as error
+}
+
+func CustomValidProductPrice(fl validator.FieldLevel) bool {
+
+	value := fl.Field().Float()
+
+	return value >= 0
 }

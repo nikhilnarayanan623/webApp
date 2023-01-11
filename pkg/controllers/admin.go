@@ -22,8 +22,10 @@ func LoginAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Login")
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+
 	ctx.HTML(200, "adminLogin.html", adminMessage)
-	adminMessage = nil
+
+	adminMessage = map[string]string{}
 
 }
 
@@ -64,6 +66,7 @@ func HomeAdmin(ctx *gin.Context) {
 	//adminId, _ := ctx.Get("adminId")
 
 	var record []models.User
+
 	db.DB.Find(&record)
 
 	//struct to store user details and this fiels is in template
@@ -81,6 +84,7 @@ func HomeAdmin(ctx *gin.Context) {
 	//range through record and add it on slice
 
 	for i, res := range record {
+
 		arrayOfField = append(arrayOfField, field{
 			ID:        i + 1,
 			UserId:    res.ID,
@@ -91,7 +95,6 @@ func HomeAdmin(ctx *gin.Context) {
 		})
 	}
 
-	fmt.Println("test")
 	ctx.HTML(200, "adminHome.html", arrayOfField)
 }
 
@@ -99,7 +102,7 @@ func HomeAdmin(ctx *gin.Context) {
 func LogoutAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Logout")
 
-	cookieVal, ok := helper.GetCookieVal(ctx, "admin")
+	cookieVal, ok := helper.GetCookieVal(ctx, "admin") //to store on black list if time not  over
 
 	if !ok {
 		ctx.Redirect(http.StatusTemporaryRedirect, "/admin")
@@ -141,11 +144,9 @@ func DeleteUserAdmin(ctx *gin.Context) {
 func BlockUserAdmin(ctx *gin.Context) {
 	fmt.Println("at admin block")
 
-	fmt.Println(ctx.Params)
-
 	userId := ctx.Params.ByName("id")
 
-	if ctx.Params.ByName("status") == "block" {
+	if ctx.Params.ByName("status") == "block" { //chekc block or unblock
 		db.DB.Model(&models.User{}).Where("id = ?", userId).Update("status", false)
 	} else {
 		db.DB.Model(&models.User{}).Where("id = ?", userId).Update("status", true)
@@ -167,8 +168,6 @@ func AddProductGet(ctx *gin.Context) {
 func AddProductPost(ctx *gin.Context) {
 
 	price, _ := strconv.Atoi(ctx.Request.PostFormValue("price"))
-
-	fmt.Println("price int", price)
 
 	var form = struct {
 		ProductName string  `validate:"required"`
@@ -203,7 +202,6 @@ func AddProductPost(ctx *gin.Context) {
 		}
 
 		ctx.Redirect(http.StatusSeeOther, "/admin/products")
-		fmt.Println("herre")
 		return
 
 	}
@@ -318,10 +316,79 @@ func EditProductGet(ctx *gin.Context) {
 	}
 
 	ctx.HTML(http.StatusOK, "adminEditProduct.html", forProductPage)
-	adminMessage = nil
+
+	forProductPage.Product = map[string]string{}
+	forProductPage.Error = map[string]string{}
 
 }
 
 func EditProductPost(ctx *gin.Context) {
 	fmt.Println("edit product post")
+
+	pid := ctx.Param("pid")
+
+	//get all value from form and validate it
+	price, err := strconv.Atoi(ctx.Request.PostFormValue("price"))
+
+	fmt.Println(ctx.Request.PostFormValue("price"))
+
+	if err != nil && ctx.Request.PostFormValue("price") != "" { //invalid value on price like string // -1 is not accepted in custon function
+		price = -1
+	}
+
+	var form = struct {
+		ProductName string  `validate:"CustomValidForUpdate"`
+		Description string  `validate:"CustomValidForUpdate"`
+		Price       float64 `validate:"CustomValidProductPrice,numeric"`
+	}{
+		ProductName: ctx.Request.PostFormValue("pname"),
+		Price:       float64(price),
+		Description: ctx.Request.PostFormValue("descritption"),
+	}
+
+	//check if all fleild is empty then show nothing to update
+	if form.ProductName == "" && form.Description == "" && price == 0 {
+
+		forProductPage.Error = map[string]string{"Alert": "Enter one of the field to update", "Color": "text-danger"}
+		EditProductGet(ctx)
+		return
+	}
+	//validate form using validate function
+	validate := validator.New()
+
+	validate.RegisterValidation("CustomValidForUpdate", helper.CustomValidForUpdate)
+	validate.RegisterValidation("CustomValidProductPrice", helper.CustomValidProductPrice)
+
+	//validate the form
+	if err := validate.Struct(form); err != nil {
+
+		var formErrors = map[string]string{}
+
+		for _, er := range err.(validator.ValidationErrors) {
+
+			formErrors[er.Namespace()] = "Enter " + er.Field() + " Properly"
+		}
+
+		forProductPage.Error = formErrors //assign to datasToEditPage error
+		EditProductGet(ctx)
+		return
+	}
+
+	if pidInt, err := strconv.Atoi(pid); err == nil { //if no error then update the value on database
+
+		db.DB.Model(&models.Product{}).Where("p_id = ?", pidInt).Updates(&models.Product{
+			Name:        form.ProductName,
+			Price:       float64(price),
+			Description: form.Description,
+		})
+
+		//sent an successfull message to page
+		forProductPage.Error = map[string]string{"Alert": "Successfully Updated Details", "Color": "text-success"}
+		EditProductGet(ctx)
+		return
+	}
+
+	//sent an an error of cant update
+	forProductPage.Error = map[string]string{"Alert": "Can't Update Details", "Color": "text-danger"}
+	EditProductGet(ctx)
 }

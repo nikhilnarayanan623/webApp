@@ -322,7 +322,7 @@ func EditUserPost(ctx *gin.Context) {
 	var form = struct {
 		FirstName string `validate:"CustomValidForUpdate"`
 		LastName  string `validate:"CustomValidForUpdate"`
-		Email     string `validate:"CustomValidForUpdate"`
+		Email     string `validate:"CustomValidForUpdate,email"`
 		Password  string
 	}{
 		FirstName: ctx.Request.PostFormValue("fname"),
@@ -332,7 +332,7 @@ func EditUserPost(ctx *gin.Context) {
 	}
 	// check all field is empty if empty no need to validate or update
 	if form.Email == "" && form.FirstName == "" && form.LastName == "" && form.Password == "" {
-		datasToEditPage.Error = map[string]string{"Alert": "Nothing To Update", "Color": "text-danger"}
+		datasToEditPage.Error = map[string]string{"Alert": "Enter one of the field to update", "Color": "text-danger"}
 		ctx.Redirect(http.StatusSeeOther, "/edituser")
 		return
 	}
@@ -341,10 +341,9 @@ func EditUserPost(ctx *gin.Context) {
 
 	validate := validator.New()
 	validate.RegisterValidation("CustomValidForUpdate", helper.CustomValidForUpdate)
-	fmt.Println("test1")
 
 	if err := validate.Struct(form); err != nil {
-		fmt.Println("test2")
+
 		var formErrors = map[string]string{}
 
 		for _, er := range err.(validator.ValidationErrors) {

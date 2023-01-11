@@ -15,7 +15,7 @@ func Admin(router *gin.Engine) {
 	router.GET("/admin/home", middleware.AdminAuth, controllers.HomeAdmin)
 	router.GET("/admin/logout", controllers.LogoutAdmin)
 
-	router.GET("/admin/:deleteuser/:id", controllers.DeleteUserAdmin)
+	router.GET("/admin/deleteuser/:id", controllers.DeleteUserAdmin)
 	router.GET("/admin/blockuser/:status/:id", controllers.BlockUserAdmin)
 
 	//admin products
@@ -30,4 +30,5 @@ func Admin(router *gin.Engine) {
 
 	//edit product
 	router.GET("/admin/editdProduct/:pid", middleware.AdminAuth, controllers.EditProductGet)
+	router.POST("/admin/editdProduct/:pid", controllers.EditProductPost)
 }

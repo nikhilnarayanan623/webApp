@@ -35,8 +35,8 @@
     </div>
 </nav>
  <div class="container mt-5" style="width: 40rem;">
-    <h3 class="{{.Error.Color}} mb-5">{{.Error.Alert}}</h3>
-    <form class="row g-3 needs-validation" method="post" action="/admin/editdProduct"  novalidate>
+    <h3 class="{{.Error.Color}} mb-5 text-center">{{.Error.Alert}}</h3>
+    <form class="row g-3 needs-validation" method="post" action="/admin/editdProduct/{{.Product.PID}}"  novalidate>
 
       <div class="col-md-12  ">
         {{if .Error.ProductName}}
@@ -53,7 +53,7 @@
         {{else}}
         <label for="validationCustom01" class="form-label">Product Price</label>
         {{end}}
-        <input type="number" name="price" class="form-control" placeholder="{{.Product.Price}}" id="validationCustom01">
+        <input type="text" name="price" class="form-control" placeholder="{{.Product.Price}}" id="validationCustom01">
       </div>
 
       <div class="col-md-12">

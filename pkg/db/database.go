@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+
 	"github.com/nikhilnarayanan623/webApp/pkg/models"
 
 	"gorm.io/driver/postgres"
@@ -18,6 +19,7 @@ var (
 func DeleteBlackListToken() {
 
 	DB.Where("end_time < ?", float64(time.Now().Unix())).Delete(&models.JwtBlackList{})
+	
 	fmt.Println("delted black listed token from database")
 }
 

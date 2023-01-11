@@ -40,10 +40,10 @@ func ValidateAdmin(form struct {
 	//check the admin in database
 	var admin models.Admin
 
-	db.DB.First(&admin, "email = ?", form.Email)
+	db.DB.Find(&admin, "email = ?", form.Email)
 
 	if admin.ID == 0 { //user not found
-		fmt.Println("admin not found in db")
+
 		return map[string]string{
 			"Alert": "You are not an admin",
 			"Color": "text-danger",
@@ -53,12 +53,14 @@ func ValidateAdmin(form struct {
 	//hash the password and check the password
 
 	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(form.Password)); err != nil {
+
 		fmt.Println("password no match")
 		return map[string]string{"Password": "Wrong Password"}, false
 	}
 
 	//valid admin
 	fmt.Println("valid admin login")
+
 	return admin.ID, true //return the id of user in database
 }
 
