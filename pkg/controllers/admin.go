@@ -18,17 +18,18 @@ import (
 
 var adminMessage interface{}
 
+// func to render the login page for admin
 func LoginAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Login")
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
 	ctx.HTML(200, "adminLogin.html", adminMessage)
-
 	adminMessage = map[string]string{}
 
 }
 
+// func to chekc the amdin form details when admin login
 func SubmitAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Submit")
 
@@ -58,6 +59,7 @@ func SubmitAdmin(ctx *gin.Context) {
 	ctx.Redirect(http.StatusSeeOther, "admin/home")
 }
 
+// to render the home page for admin and show the user details
 func HomeAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Home")
 
@@ -98,7 +100,7 @@ func HomeAdmin(ctx *gin.Context) {
 	ctx.HTML(200, "adminHome.html", arrayOfField)
 }
 
-// logout
+// func to logout admin and store the token as token if its expire time not over
 func LogoutAdmin(ctx *gin.Context) {
 	fmt.Println("At Admin Logout")
 
@@ -130,17 +132,17 @@ func LogoutAdmin(ctx *gin.Context) {
 	ctx.Redirect(http.StatusTemporaryRedirect, "/admin")
 }
 
-// delte user
+// func to delete specific user using params as user id
 func DeleteUserAdmin(ctx *gin.Context) {
 
 	userId := ctx.Param("id")
-
-	db.DB.Clauses(clause.OnConflict{DoNothing: true}).Unscoped().Delete(&models.User{}, "id = ?", userId)
+	//permenant delte changed to soft delete
+	db.DB.Clauses(clause.OnConflict{DoNothing: true}).Delete(&models.User{}, "id = ?", userId)
 
 	ctx.Redirect(http.StatusSeeOther, "/admin/home")
 }
 
-// block usr
+// block or unblock specific user using params as user id
 func BlockUserAdmin(ctx *gin.Context) {
 	fmt.Println("at admin block")
 
@@ -155,7 +157,7 @@ func BlockUserAdmin(ctx *gin.Context) {
 	ctx.Redirect(http.StatusSeeOther, "/admin/home")
 }
 
-// add product
+// func to render a form page form admin to add product
 func AddProductGet(ctx *gin.Context) {
 	fmt.Println("at add product")
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -164,25 +166,33 @@ func AddProductGet(ctx *gin.Context) {
 	adminMessage = nil
 }
 
-// add product post !! two page have same handler so with the path i just redirect to page
+// func to check value that get from value and validate and store on database
 func AddProductPost(ctx *gin.Context) {
 
-	price, _ := strconv.Atoi(ctx.Request.PostFormValue("price"))
+	price, err := strconv.Atoi(ctx.Request.PostFormValue("price"))
+
+	//invalid value on price like string // -1 is not accepted in custon function
+	if err != nil && ctx.Request.PostFormValue("price") != "" {
+		price = -1
+	}
 
 	var form = struct {
-		ProductName string  `validate:"required"`
-		Description string  `validate:"required"`
-		Price       float64 `validate:"required,numeric"`
+		ProductName string  `validate:"CustomValidForAddProduct"`
+		Description string  `validate:"CustomValidForAddProduct"`
+		Price       float64 `validate:"CustomValidAddProductPrice,numeric"`
 	}{
 		ProductName: ctx.Request.PostFormValue("pname"),
 		Price:       float64(price),
 		Description: ctx.Request.PostFormValue("descritption"),
 	}
 
-	//add validation later
+	//ceate an instance of validator and register custom function
 
 	validate := validator.New()
+	validate.RegisterValidation("CustomValidForAddProduct", helper.CustomValidForAddProduct)
+	validate.RegisterValidation("CustomValidAddProductPrice", helper.CustomValidAddProductPrice)
 
+	//chekc if there is an error in the form according to custom function
 	if err := validate.Struct(form); err != nil { //form have error then find the error and show it on page
 
 		var errorToTempl = map[string]string{}
@@ -194,7 +204,7 @@ func AddProductPost(ctx *gin.Context) {
 
 		adminMessage = errorToTempl
 
-		//check the param and go to appropripriate page param have a value its where from
+		//check the param and go to appropripriate page because two page have same handler
 		from := ctx.Param("from")
 		if from == "add" {
 			ctx.Redirect(http.StatusSeeOther, "/admin/addProduct")
@@ -203,30 +213,32 @@ func AddProductPost(ctx *gin.Context) {
 
 		ctx.Redirect(http.StatusSeeOther, "/admin/products")
 		return
-
 	}
 
-	//chekc the product alredy in database if not then add it to database
-
-	db.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.Product{
-		Name:        form.ProductName,
+	//if any conflict like same product is already exist do nothin using the cluase
+	db.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.Product{ //product name field is unique
+		ProductName: form.ProductName,
 		Price:       form.Price,
 		Description: form.Description,
 		StockIn:     true,
 	})
-
+	//after all ho to product page
 	ctx.Redirect(http.StatusSeeOther, "/admin/products")
 }
 
-//products
-
+// func to render a  page that can show all product available in database
 func ShowProductsAdmin(ctx *gin.Context) {
 
 	fmt.Println("at admin show products")
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	type Product struct { //this in the template name
+	var records []models.Product // to store all products in an array
+
+	db.DB.Find(&records) //find all products and store the array
+
+	//struct to store all value we want to show for a sing product including serial number as array indext
+	type Product struct {
 		ID          int
 		PID         uint
 		ProductName string
@@ -234,13 +246,7 @@ func ShowProductsAdmin(ctx *gin.Context) {
 		Description string
 		StockIn     bool
 	}
-
-	var records []models.Product //to store all products in an array form
-
-	db.DB.Find(&records) //find all products
-
-	//store all products in a new array product that we created
-
+	//arra for all products
 	var arrayProducts []Product
 
 	for i, res := range records {
@@ -248,29 +254,29 @@ func ShowProductsAdmin(ctx *gin.Context) {
 		arrayProducts = append(arrayProducts, Product{
 			ID:          i + 1,
 			PID:         res.PID,
-			ProductName: res.Name,
+			ProductName: res.ProductName,
 			Price:       res.Price,
 			Description: res.Description,
 			StockIn:     res.StockIn,
 		})
 	}
 
-	// show the page
-
+	// render the html page
 	ctx.HTML(http.StatusOK, "adminProducts.html", arrayProducts)
 
 }
 
+// to delet or block a product using the product id as params
 func BlockOrDeleteProductAdmin(ctx *gin.Context) {
 	fmt.Println("at block product")
 
-	//get the params
+	//get the params of product id and the status as block / unblock / delete
 	pid := ctx.Param("pid")
 	status := ctx.Param("status")
 
-	//convet pid to int
+	//convet pid to integer form
 
-	if pidInt, err := strconv.Atoi(pid); err == nil { //there is no error
+	if pidInt, err := strconv.Atoi(pid); err == nil {
 
 		if status == "block" { //block product
 			db.DB.Model(&models.Product{}).Where("p_id = ?", pidInt).Update("stock_in", false)
@@ -281,16 +287,15 @@ func BlockOrDeleteProductAdmin(ctx *gin.Context) {
 		}
 	}
 
-	//after redirect to product page
-
+	//redirect to the product page
 	ctx.Redirect(http.StatusSeeOther, "/admin/products")
 }
 
-// Edit Product
+// variable of stuct to store product details and error when the form submiting
 var forProductPage = struct {
-	Product interface{}
+	Product interface{} //to store key as string and value as any
 	Error   interface{}
-}{Product: map[string]string{}, Error: map[string]string{}} //assign empty string/string map
+}{Product: map[string]interface{}{}, Error: map[string]string{}} //assign empty string/string map
 
 // edit product
 func EditProductGet(ctx *gin.Context) {
@@ -309,7 +314,7 @@ func EditProductGet(ctx *gin.Context) {
 		//create strcut that can hold all value of product and store it on forProductPage
 		forProductPage.Product = map[string]interface{}{
 			"PID":         prodcut.PID,
-			"ProductName": prodcut.Name,
+			"ProductName": prodcut.ProductName,
 			"Price":       prodcut.Price,
 			"Description": prodcut.Description,
 		}
@@ -317,22 +322,22 @@ func EditProductGet(ctx *gin.Context) {
 
 	ctx.HTML(http.StatusOK, "adminEditProduct.html", forProductPage)
 
+	//clear old value that sored in maps
 	forProductPage.Product = map[string]string{}
 	forProductPage.Error = map[string]string{}
 
 }
 
+// func to get values from a the from and check there is an error or not if no error the update it
 func EditProductPost(ctx *gin.Context) {
 	fmt.Println("edit product post")
 
 	pid := ctx.Param("pid")
 
-	//get all value from form and validate it
+	//first get the product price and convert into string
 	price, err := strconv.Atoi(ctx.Request.PostFormValue("price"))
-
-	fmt.Println(ctx.Request.PostFormValue("price"))
-
-	if err != nil && ctx.Request.PostFormValue("price") != "" { //invalid value on price like string // -1 is not accepted in custon function
+	//if error on converting to int then assing to -1 so the custom validation have condtion to check
+	if err != nil && ctx.Request.PostFormValue("price") != "" {
 		price = -1
 	}
 
@@ -346,7 +351,7 @@ func EditProductPost(ctx *gin.Context) {
 		Description: ctx.Request.PostFormValue("descritption"),
 	}
 
-	//check if all fleild is empty then show nothing to update
+	//check if all fleild is empty then no need to update
 	if form.ProductName == "" && form.Description == "" && price == 0 {
 
 		forProductPage.Error = map[string]string{"Alert": "Enter one of the field to update", "Color": "text-danger"}
@@ -374,21 +379,22 @@ func EditProductPost(ctx *gin.Context) {
 		return
 	}
 
-	if pidInt, err := strconv.Atoi(pid); err == nil { //if no error then update the value on database
+	// if form is valid then convert pid to int and update the form value in database
+	if pidInt, err := strconv.Atoi(pid); err == nil {
 
 		db.DB.Model(&models.Product{}).Where("p_id = ?", pidInt).Updates(&models.Product{
-			Name:        form.ProductName,
+			ProductName: form.ProductName,
 			Price:       float64(price),
 			Description: form.Description,
 		})
 
-		//sent an successfull message to page
+		// sent an successfull message to page
 		forProductPage.Error = map[string]string{"Alert": "Successfully Updated Details", "Color": "text-success"}
 		EditProductGet(ctx)
 		return
 	}
 
-	//sent an an error of cant update
+	//if an error to convert pid to in then show cant update
 	forProductPage.Error = map[string]string{"Alert": "Can't Update Details", "Color": "text-danger"}
 	EditProductGet(ctx)
 }

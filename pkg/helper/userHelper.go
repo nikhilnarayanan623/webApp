@@ -11,6 +11,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+//function to help user signup handler for validation
+
 func ValidateUserLogin(form struct {
 	Email    string `validate:"required,email"`
 	Password string `validate:"required"`
@@ -33,7 +35,7 @@ func ValidateUserLogin(form struct {
 	//chekc the user is in database
 	var user models.User
 
-	db.DB.First(&user, "email = ?", form.Email)
+	db.DB.Find(&user, "email = ?", form.Email)
 
 	if user.ID == 0 { //user not found
 		return map[string]string{
@@ -41,6 +43,7 @@ func ValidateUserLogin(form struct {
 			"Color": "text-danger",
 		}, false
 	}
+
 	//hash the password and check it on db pass
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(form.Password)) != nil {
 		return map[string]string{
@@ -60,7 +63,7 @@ func ValidateUserLogin(form struct {
 	return user.ID, true
 }
 
-//validate user signup
+//function to help signup controller for validation
 
 func ValidateUserSubmit(form struct {
 	FirstName string `validate:"required"`
@@ -78,8 +81,6 @@ func ValidateUserSubmit(form struct {
 
 		for _, er := range err.(validator.ValidationErrors) {
 
-			fmt.Println("***", er.Error(), "***")
-
 			TempMessagese[er.Namespace()] = "Enter " + er.Namespace() + "Properly"
 		}
 
@@ -91,8 +92,6 @@ func ValidateUserSubmit(form struct {
 	var user models.User
 
 	db.DB.First(&user, "email = ?", form.Email)
-
-	fmt.Println("test1")
 
 	if user.ID != 0 { //the user alredy exist
 		fmt.Println("usre alredy exist")
@@ -108,8 +107,7 @@ func ValidateUserSubmit(form struct {
 		return map[string]string{"Password": "Error"}, false
 	}
 
-	//there is no error to hash the pass
-
+	//there is no error to hash the pass and creat an error
 	db.DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&models.User{
 		FirstName: form.FirstName,
 		LastName:  form.LastName,

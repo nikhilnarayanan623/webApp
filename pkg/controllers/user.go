@@ -18,9 +18,9 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-var userMessage interface{} // to store all message that want to show in login and signup page
+var userMessage interface{} // to store any type in here a function return error and userId as map and int
 
-// singup hanler
+// to render signup page
 func SignupUser(ctx *gin.Context) {
 	fmt.Println("signup user")
 
@@ -30,6 +30,7 @@ func SignupUser(ctx *gin.Context) {
 	userMessage = nil
 }
 
+// to vlidate and update the user when signup
 func SigupSubmitUser(ctx *gin.Context) {
 	fmt.Println("signup submit user")
 
@@ -53,21 +54,17 @@ func SigupSubmitUser(ctx *gin.Context) {
 		return
 	}
 
-	//if is a valid form then the function will sore datasToEditPage on database
-
+	//if new user is details valid and not an exisistring user then show the login page and show a successfull message
 	userMessage = message
-	//there is no error then see the login page
 	ctx.Redirect(http.StatusSeeOther, "/")
-
 }
 
-// login user
+// to render the login page
 func LoginUser(ctx *gin.Context) {
 	fmt.Println("login user")
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
 	ctx.HTML(http.StatusOK, "userLogin.html", userMessage)
-
 	userMessage = nil //after render html then dlete message
 }
 
@@ -91,65 +88,70 @@ func LoginSubmitUser(ctx *gin.Context) {
 		return
 	}
 
-	// if a valid user setyp jwt
-
+	// if its a valid user then call jwt for setup the jwt and cookie, for user cookie name is user
 	if !helper.JwtSetUp(ctx, "user", userVal) {
 		ctx.Redirect(http.StatusSeeOther, "/")
 		return
 	}
 
+	//redire to the home page then middleware chekc the token and set the user id on context
 	ctx.Redirect(http.StatusSeeOther, "/home")
 }
 
-// user home page
+// func to render home page for user that show all proudct in the database
 func HomeUser(ctx *gin.Context) {
 	fmt.Println("Home user")
 
 	ctx.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 
-	//get all products that stock in db and show it
-
+	//get all products form database in an array
 	var products []models.Product
-	db.DB.Find(&products, "stock_in = ?", true) //find all product
 
-	type fields struct {
-		UserName    string
-		PID         uint
-		ProductName string
-		Price       float64
-		Description string
-	}
+	db.DB.Find(&products)
 
-	var results []fields
+	// // struct type to store all value from of a product
+	// type fields struct {
+	// 	PID         uint
+	// 	ProductName string
+	// 	Price       float64
+	// 	Description string
+	// 	StokIn      bool
+	// }
+	// // to store all products
+	// var results []fields
 
-	for _, res := range products {
+	// for _, res := range products { //range through the product and append it on the results
 
-		results = append(results, fields{ //append all value to that slice
-			PID:         res.PID,
-			ProductName: res.Name,
-			Price:       res.Price,
-			Description: res.Description,
-		})
-	}
-
-	//find the user and add the username to results
-	userId, _ := ctx.Get("userId") // user id from context
+	// 	results = append(results, fields{ //append all value to that slice
+	// 		PID:         res.PID,
+	// 		ProductName: res.Name,
+	// 		Price:       res.Price,
+	// 		Description: res.Description,
+	// 		StokIn:      res.StockIn,
+	// 	})
+	// }
 
 	var user models.User
-	db.DB.Find(&user, "id = ?", userId)
 
-	//create a struct that can hold products and userNam
+	//get the user id from context and get the user data from database
+	if userId, ok := ctx.Get("userId"); ok {
+
+		db.DB.Find(&user, "id = ?", userId)
+	}
+
+	//create a struct that can hold products and userName
 
 	var PassValue = struct { //to pass value to template
-		UserName string
-		Products []fields
+		UserName  string
+		CartCount int
+		Products  interface{}
 	}{
-		UserName: user.FirstName,
-		Products: results,
+		UserName:  user.FirstName,
+		CartCount: len(user.Products), //to get how many products in cart
+		Products:  products,
 	}
 
 	ctx.HTML(http.StatusOK, "userHome.html", PassValue)
-
 }
 
 // Logout
@@ -216,14 +218,14 @@ func ShowCartUser(ctx *gin.Context) {
 
 	db.DB.Find(&user, "id = ?", userId) //find the user from database
 
-	type Cart struct { // to store each details we want from database
+	type cart struct { // to store each details we want from database
 		PID         uint
 		ProductName string
 		Price       float64
 		StockIn     bool
 	}
 
-	var arrayOfCart []Cart //to store all detail of product
+	var arrayOfCart []cart //to store all detail of product
 
 	for _, res := range user.Products { //range through the products id array we got from user
 
@@ -237,15 +239,24 @@ func ShowCartUser(ctx *gin.Context) {
 			continue
 		}
 
-		arrayOfCart = append(arrayOfCart, Cart{
+		arrayOfCart = append(arrayOfCart, cart{
 			PID:         product.PID,
-			ProductName: product.Name,
+			ProductName: product.ProductName,
 			Price:       product.Price,
 			StockIn:     product.StockIn,
 		})
 	}
+
+	var passValue struct {
+		AllProducts []cart
+		Count       int
+	}
+
+	passValue.AllProducts = arrayOfCart
+	passValue.Count = len(arrayOfCart)
+
 	fmt.Println("last of show cart")
-	ctx.HTML(http.StatusOK, "userCart.html", arrayOfCart)
+	ctx.HTML(http.StatusOK, "userCart.html", passValue)
 
 }
 
@@ -322,7 +333,7 @@ func EditUserPost(ctx *gin.Context) {
 	var form = struct {
 		FirstName string `validate:"CustomValidForUpdate"`
 		LastName  string `validate:"CustomValidForUpdate"`
-		Email     string `validate:"CustomValidForUpdate,email"`
+		Email     string `validate:"CustomValidForUpdate"`
 		Password  string
 	}{
 		FirstName: ctx.Request.PostFormValue("fname"),

@@ -31,8 +31,8 @@ func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 
 	//create signed token string using env vaiable
 	if tokenString, err := token.SignedString([]byte(os.Getenv("JWTCODE"))); err == nil {
-		//set cookie
 
+		//set the cookie if no error when signing the string
 		ctx.SetCookie(name, tokenString, 10*60, "", "", false, true)
 
 		fmt.Println("successfully setup jwt cookie")
@@ -55,6 +55,7 @@ func GetToken(ctx *gin.Context, name string) (*jwt.Token, bool) {
 	if !ok { //problem to get cookie so return flase
 		return nil, false
 	}
+
 	//check the user in black list or not
 	var jwtBlack models.JwtBlackList
 
@@ -94,7 +95,23 @@ func GetCookieVal(ctx *gin.Context, name string) (string, bool) {
 	return "", false
 }
 
-// func to help validation
+// Custon validator function
+
+// for add product
+func CustomValidForAddProduct(fl validator.FieldLevel) bool {
+
+	value := fl.Field().String()
+
+	return len(value) > 4 && len(value) < 40 //if any of this condition true then dont take it as error
+}
+func CustomValidAddProductPrice(fl validator.FieldLevel) bool {
+
+	value := fl.Field().Float()
+
+	return value > 0
+}
+
+// for update product
 func CustomValidForUpdate(fl validator.FieldLevel) bool {
 
 	value := fl.Field().String()

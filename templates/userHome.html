@@ -18,7 +18,7 @@
             </div>
             <div class="col-2">
                 <div class="row justify-content-end">
-                    <a href="/cart"><button class="btn btn-success">Go To Cart</button></a>
+                    <a href="/cart"class="btn btn-warning w-75">Go To Cart <span style="font-size: larger;">{{.CartCount}}</span></a>
                 </div>
                 
             </div>
@@ -66,7 +66,11 @@
                     <p class="card-text">
                     {{.Description}}
                     </p>
-                    <a href="/home/addToCart/{{.PID}}" class="btn btn-primary"> Add to cart</a>
+                    {{if .StockIn}}
+                        <a href="/home/addToCart/{{.PID}}" class="btn btn-success"> Add to cart</a>
+                    {{else}}
+                        <a href="" class="btn btn-danger">Out Of Stock</a>
+                    {{end}}
                 </div>
             </div>
         </div>

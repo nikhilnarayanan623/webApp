@@ -31,7 +31,7 @@ func AdminAuth(ctx *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid { //valid token
 		//chek the token time is over
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			
+
 			fmt.Println("the token is timeouted")
 			ctx.Abort()
 			ctx.Redirect(http.StatusSeeOther, "/admin")
@@ -64,5 +64,5 @@ func AdminAuth(ctx *gin.Context) {
 		ctx.Abort()
 		ctx.Redirect(http.StatusSeeOther, "/admin")
 	}
-
+	fmt.Println("heerer")
 }

@@ -33,6 +33,8 @@ func main() {
 	//otherwise show login page
 	router.NoRoute(func(ctx *gin.Context) {
 
+		fmt.Println(ctx.Request.Method, "method")
+
 		fmt.Println("invalid url so showing login page")
 		ctx.Redirect(http.StatusSeeOther, "/")
 	})
