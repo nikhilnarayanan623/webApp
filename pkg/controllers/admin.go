@@ -47,7 +47,7 @@ func SubmitAdmin(ctx *gin.Context) {
 		return
 	}
 
-	//set the jwt // admiVal is actully admin id
+	//set the jwt, now adminVal is admin id
 	if !helper.JwtSetUp(ctx, "admin", adminVal) { //func to setup the jwt
 		//error to setup the token
 		LoginAdmin(ctx)
@@ -128,6 +128,9 @@ func LogoutAdmin(ctx *gin.Context) {
 			}
 		}
 	}
+
+	//delete the cookie using timout
+	ctx.SetCookie("admin", "", -1, "", "", false, true)
 
 	ctx.Redirect(http.StatusTemporaryRedirect, "/admin")
 }

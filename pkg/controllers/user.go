@@ -143,8 +143,8 @@ func HomeUser(ctx *gin.Context) {
 
 	var PassValue = struct { //to pass value to template
 		UserName  string
-		CartCount int
-		Products  interface{}
+		CartCount int         //to show count of products in cart
+		Products  interface{} // to store any type value in here store a array of products
 	}{
 		UserName:  user.FirstName,
 		CartCount: len(user.Products), //to get how many products in cart
@@ -165,7 +165,7 @@ func LogoutUser(ctx *gin.Context) {
 		return
 	}
 
-	//get the token and check the token is expired
+	//get the token and check the token is expired if not then store it on database for next time validation
 	if token, ok := helper.GetToken(ctx, "user"); ok {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -180,6 +180,10 @@ func LogoutUser(ctx *gin.Context) {
 			}
 		}
 	}
+
+	//delete the cookie on client side using set its time as -1
+	ctx.SetCookie("user", "", -1, "", "", false, true)
+
 	//atlast redirect to login page
 	ctx.Redirect(http.StatusSeeOther, "/")
 }
@@ -235,7 +239,7 @@ func ShowCartUser(ctx *gin.Context) {
 
 		//check the product is deleted or not
 
-		if product.PID == 0 {
+		if product.PID == 0 {//if admin deleted the product then not show in cart
 			continue
 		}
 

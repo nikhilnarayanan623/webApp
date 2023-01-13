@@ -20,7 +20,7 @@ func JwtSetUp(ctx *gin.Context, name string, userId interface{}) bool {
 
 	fmt.Println("jwt setup")
 
-	cookieTime := time.Now().Add(10 * time.Minute).Unix()
+	cookieTime := time.Now().Add(20 * time.Minute).Unix()
 
 	// v := reflect.ValueOf(user)
 

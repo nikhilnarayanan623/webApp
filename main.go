@@ -24,13 +24,11 @@ func main() {
 	//parse all templates
 	router.LoadHTMLGlob("templates/*.html")
 
-	//setup router
+	//setup router for user and admin in different function
 	routes.Admin(router)
 	routes.User(router)
 
-	//no  rout found
-	//invalid url then redirect to login page of user that middleware check if user is logged in then show home page
-	//otherwise show login page
+	//if invalid url found then show user login page
 	router.NoRoute(func(ctx *gin.Context) {
 
 		fmt.Println(ctx.Request.Method, "method")
